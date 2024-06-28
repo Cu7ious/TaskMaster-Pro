@@ -1,0 +1,30 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: task-master-pro-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: task-master-pro-node
+    working_dir: /app
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URL: mongodb://task-master-pro-db:27017/task-master-pro
+      PORT: 3000
+    command: "npm start"
+
+volumes:
+  mongo_data:
