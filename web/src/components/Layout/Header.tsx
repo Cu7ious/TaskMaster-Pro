@@ -2,7 +2,8 @@ import byCu7iousWatermark from "~/assets/svg/by-Cu7ious-watermark-white.svg";
 import githubIcon from "~/assets/svg/github.svg";
 import { THEME_COLORS, useTheme } from "~/themeProvider";
 import { css } from "@emotion/react";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
+import { AuthContext } from "../auth/AuthContext";
 
 const navButton = css`
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAQAAAAB/ecQqAAAAAnRSTlMAAHaTzTgAAAAWSURBVHgBY6AFYP4PBAewUoPbFMoBAE11OPW6yVcZAAAAAElFTkSuQmCC)
@@ -90,6 +91,7 @@ const headerLogo = css`
 `;
 
 export default function Header(props: any) {
+  const authContext = useContext(AuthContext);
   const [{ appTheme }] = useTheme();
   const openSidebar = useCallback(() => props.setActivePanel(true), [props]);
 
@@ -101,6 +103,8 @@ export default function Header(props: any) {
     );
     border-bottom: 4px solid ${(THEME_COLORS as any)[appTheme].MAIN_COLOR_DARK};
   `;
+
+  const { user } = authContext;
 
   return (
     <header css={[header, headerColors]}>
@@ -154,18 +158,32 @@ export default function Header(props: any) {
         </a>
       </div>
       <div css={headerRight}>
-        <a
-          css={githubBadge}
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://github.com/Cu7ious/"
-        >
+        {user ? (
           <img
-            src={githubIcon}
-            alt="See more on GitHub"
+            css={userAvatar}
+            src={user.profilePic}
+            alt="User Avatar"
           />
-        </a>
+        ) : (
+          <a
+            css={githubBadge}
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://github.com/Cu7ious/"
+          >
+            <img
+              src={githubIcon}
+              alt="See more on GitHub"
+            />
+          </a>
+        )}
       </div>
     </header>
   );
 }
+
+const userAvatar = css`
+  ${githubBadge}
+  width: 32px;
+  border-radius: 32px;
+`;

@@ -1,27 +1,39 @@
 import { css } from "@emotion/react";
 import { useContext, useState } from "react";
-import { capitalize, Task } from "~/utils";
+import { capitalize } from "~/utils";
 import { saveAllResolved, createItem } from "~/API/tasks";
-import { AppContext } from "~/appState";
+import { useAppState } from "~/context/AppStateContext";
+import { AuthContext } from "~/components/auth/AuthContext";
 
-interface InputBoxProps {
+interface TasksCreatorProps {
   hidden?: boolean;
 }
 
-const InputBox: React.FC<InputBoxProps> = ({ hidden }) => {
-  const state = useContext(AppContext);
+const getProject = (id: string, projects: any[]) => projects.find(proj => proj._id === id);
+const getProjectTasks = (id: string, projects: any[]) => getProject(id, projects)?.tasks;
+
+const TasksInput: React.FC<TasksCreatorProps> = ({ hidden }) => {
+  const [appState, dispatch] = useAppState();
+
+  const auth = useContext(AuthContext);
   const [inputValue, setInputValue] = useState("");
-  const isEmpty = state.items.length === 0;
+  const projectTasks = getProjectTasks(appState.currentProjectId, appState.projects);
+  const isEmpty = projectTasks.length === 0;
 
   function markAllAsResolved() {
-    const ids = state.items.map(itm => itm._id);
-    const resolved = !state.items.every(itm => itm.resolved);
+    const ids = projectTasks.map(itm => itm._id);
+    const resolved = !projectTasks.every(itm => itm.resolved);
     saveAllResolved(ids, resolved).then(() => {
-      const items = state.items.map(itm => {
-        itm.resolved = resolved;
-        return itm;
+      console.log("resolved:", resolved);
+      dispatch({
+        type: "MARK_ALL_TASKS_AS_RESOLVED",
+        payload: {
+          id: appState.currentProjectId,
+          newTasks: projectTasks.map(itm => {
+            return { ...itm, resolved };
+          }),
+        },
       });
-      state.setState({ ...state, items });
     });
   }
 
@@ -31,12 +43,16 @@ const InputBox: React.FC<InputBoxProps> = ({ hidden }) => {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      createItem(state.projectId, capitalize(inputValue)).then(res => {
-        const newItems = [...state.items];
-        const newItem: Task = { ...res.data, editing: false };
-        newItems.push(newItem);
-        state.setState({ ...state, items: newItems });
+      if (inputValue.trim() === "") return;
+      createItem(auth?.user?._id, appState.currentProjectId, capitalize(inputValue)).then(res => {
         setInputValue("");
+        dispatch({
+          type: "CREATE_TASK",
+          payload: {
+            id: appState.currentProjectId,
+            newTask: { ...res.data, editing: false },
+          },
+        });
       });
     } else if (e.key === "Escape") {
       setInputValue("");
@@ -68,7 +84,7 @@ const InputBox: React.FC<InputBoxProps> = ({ hidden }) => {
   );
 };
 
-export default InputBox;
+export default TasksInput;
 
 const inputForm = css`
   display: inline-block;

@@ -49,12 +49,13 @@ export async function getAllItemsByProject(projectId: string): Promise<AxiosResp
   }
 }
 
-export async function createItem(projectId: string, content: string): Promise<AxiosResponse<ApiDesc>> {
+export async function createItem(userId: string, projectId: string, content: string): Promise<AxiosResponse<ApiDesc>> {
   const url = `${apiURL}/tasks`;
   // console.log(projectId);
   
   try {
     const response = await axios.post<ApiDesc>(url, {
+      userId,
       projectId,
       content,
     });

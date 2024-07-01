@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm i
 
 # Install nodemon globally
-RUN npm install -g nodemon
+# RUN npm install -g nodemon
 
 # Copy the rest of the application code to the working directory
 COPY . .

@@ -1,21 +1,26 @@
 import { css } from "@emotion/react";
-import React, { useContext } from "react";
+import { useAppState } from "~/context/AppStateContext";
 
-import { AppContext } from "~/appState";
 import { Filter, filterItems } from "~/utils";
 import { deleteAllCompletedItems } from "~/API/tasks";
 import Filters from "./Filters";
 
+const getProject = (id: string, projects: any[]) => projects.find(proj => proj._id === id);
+const getProjectTasks = (id: string, projects: any[]) => getProject(id, projects)?.tasks;
 export default function AppControls() {
-  const state = useContext(AppContext);
+  const [appState, dispatch] = useAppState();
+  const tasks = getProjectTasks(appState.currentProjectId, appState.projects);
 
   function clearAllCompleted() {
-    const ids = state.items.filter(itm => itm.resolved).map(itm => itm._id);
+    const ids = tasks.filter(itm => itm.resolved).map(itm => itm._id);
     ids.length > 0 &&
       deleteAllCompletedItems(ids).then(res => {
         if ((res as any)?.status === 200) {
-          const items = state.items.filter(item => item.resolved !== true);
-          state.setState({ ...state, items });
+          const items = tasks.filter(item => item.resolved !== true);
+          dispatch({
+            type: "CLEAR_ALL_COMPLETED_TASKS",
+            payload: { id: appState.currentProjectId, newTasks: items },
+          });
         }
       });
   }
@@ -29,18 +34,20 @@ export default function AppControls() {
     );
   }
 
-  return state.items.length > 0 ? (
-    <div css={controlsCSS}>
-      {renderRemained(state.items)}
-      <Filters />
-      <button
-        css={clearButton}
-        onClick={clearAllCompleted}
-      >
-        Clear completed
-      </button>
-    </div>
-  ) : null;
+  return (
+    tasks.length > 0 && (
+      <div css={controlsCSS}>
+        {renderRemained(tasks)}
+        <Filters />
+        <button
+          css={clearButton}
+          onClick={clearAllCompleted}
+        >
+          Clear completed
+        </button>
+      </div>
+    )
+  );
 }
 
 const controlsCSS = css`

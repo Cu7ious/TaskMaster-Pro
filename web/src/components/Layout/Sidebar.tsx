@@ -2,6 +2,56 @@ import byCu7iousWatermark from "~/assets/svg/by-Cu7ious-watermark-black.svg";
 import { THEME_COLORS, useTheme } from "~/themeProvider";
 import { css } from "@emotion/react";
 import { useCallback } from "react";
+import UserProfile from "~/components/auth/UserProfile";
+
+export default function Sidebar(props: any) {
+  const [{ appTheme }] = useTheme();
+  const color = { color: `${(THEME_COLORS as any)[appTheme].MAIN_COLOR}` };
+  const closeSidebar = useCallback(() => props.setActivePanel(false), [props.activePanel]);
+
+  return (
+    <>
+      <aside css={[sidebar, props.activePanel && activeSidebar]}>
+        <h2 style={color}>Task Master Pro</h2>
+        <h3 style={color}>Plan Smart, Solve Better.</h3>
+        <button
+          css={closeButton}
+          onClick={closeSidebar}
+        >
+          ⨯
+        </button>
+        <section css={content}>
+          <UserProfile onLogout={props.setActivePanel} />
+          {/* <ul>
+            <li>
+              Cutting edge frontend stack, <b>simplified</b>
+            </li>
+          </ul> */}
+        </section>
+        <footer css={footer}>
+          <p>
+            Designed &amp; coded with &hearts;
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://cu7io.us/"
+            >
+              <img
+                src={byCu7iousWatermark}
+                alt="Created by CU7IOUS"
+              />
+            </a>
+          </p>
+        </footer>
+      </aside>
+      <div
+        css={[magOverlay, props.activePanel && activeOverlay]}
+        id="magnet-overlay"
+        onClick={closeSidebar}
+      />
+    </>
+  );
+}
 
 const footer = css`
   position: fixed;
@@ -41,7 +91,7 @@ const content = css`
   margin-top: 30px;
   overflow-y: auto;
 
-  & ul {
+  ul {
     list-style-position: inside;
   }
 `;
@@ -60,22 +110,12 @@ const sidebar = css`
   transform: translateX(-460px);
   transition: transform 0.5s ease-in-out;
 
-  & h2,
-  & h3 {
+  h2,
+  h3 {
     font-weight: 100;
     font-style: italic;
     text-align: center;
     color: #006db6;
-  }
-
-  & ul {
-    & li {
-      font-weight: 100;
-      color: #626262;
-      & span {
-        font-weight: bold;
-      }
-    }
   }
 
   @media screen and (max-width: 600px) {
@@ -104,7 +144,7 @@ const closeButton = css`
   outline: none;
   transition: color 0.3s linear;
 
-  &:hover {
+  :hover {
     color: #6b6b6b;
   }
 `;
@@ -137,51 +177,3 @@ const activeOverlay = css`
   z-index: 99;
   opacity: 0.6;
 `;
-
-export default function Sidebar(props: any) {
-  const [{ appTheme }] = useTheme();
-  const color = { color: `${(THEME_COLORS as any)[appTheme].MAIN_COLOR}` };
-  const closeSidebar = useCallback(() => props.setActivePanel(false), [props]);
-
-  return (
-    <>
-      <aside css={[sidebar, props.activePanel && activeSidebar]}>
-        <h2 style={color}>Task Master Pro</h2>
-        <h3 style={color}>Plan Smart, Solve Better.</h3>
-        <button
-          css={closeButton}
-          onClick={closeSidebar}
-        >
-          ⨯
-        </button>
-        <section css={content}>
-          <ul>
-            <li>
-              Cutting edge frontend stack, <b>simplified</b>
-            </li>
-          </ul>
-        </section>
-        <footer css={footer}>
-          <p>
-            Designed &amp; coded with &hearts;
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://cu7io.us/"
-            >
-              <img
-                src={byCu7iousWatermark}
-                alt="Created by CU7IOUS"
-              />
-            </a>
-          </p>
-        </footer>
-      </aside>
-      <div
-        css={[magOverlay, props.activePanel && activeOverlay]}
-        id="magnet-overlay"
-        onClick={closeSidebar}
-      />
-    </>
-  );
-}

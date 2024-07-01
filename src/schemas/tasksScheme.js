@@ -5,6 +5,7 @@ const tasksSchema = new mongoose.Schema(
   {
     content: { type: String, required: true },
     resolved: { type: Boolean, default: false },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true },
   },
   { timestamps: true }
