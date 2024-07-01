@@ -1,7 +1,7 @@
 const Router = require("koa-router");
 const tasksController = require("../controllers/tasksController");
 
-const router = new Router();
+const router = new Router({ prefix: "/api/v1" });
 
 router.post("/tasks", tasksController.createTask);
 router.get("/tasks", tasksController.getAllTasks);

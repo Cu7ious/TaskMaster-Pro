@@ -1,44 +1,49 @@
-const Project = require("../models/projectsScheme");
-const Task = require("../models/tasksScheme");
+const Project = require("../schemas/projectsScheme");
+const Task = require("../schemas/tasksScheme");
+const User = require("../schemas/usersScheme");
 
-// Create a new to-do
 const createProject = async ctx => {
-  const { name, tags } = ctx.request.body;
+  const { user, name, tags } = ctx.request.body;
+
   const project = new Project({
+    user,
     name,
     tags,
   });
   await project.save();
+
+  await User.findByIdAndUpdate(user, { $push: { projects: project._id } });
+
   ctx.status = 201;
   ctx.body = project;
 };
 
-// Get all to-dos
-const getAllProjects = async ctx => {
-  // const projects = await Project.find();
-  const projects = await Project.find().populate("tasks");
-  // ctx.body = [projects[0]];
-  ctx.body = projects;
-};
-
 const getAllProjectsPaginated = async ctx => {
-  const page = parseInt(ctx.request.params.page) || 1; // Current page number, default to 1
-  const limit = 5;
-  const skip = (page - 1) * limit;
-  // console.log(page);
-  try {
-    const projects = await Project.find().skip(skip).limit(limit);
-    const totalProjects = await Project.countDocuments();
+  if (ctx.isAuthenticated()) {
+    const page = parseInt(ctx.request.params.page) || 1;
+    const limit = 5;
+    const skip = (page - 1) * limit;
+    // console.log(ctx.state.user);
+    try {
+      const projects = await Project.find({ user: ctx.state.user._id })
+        .populate("tasks")
+        .skip(skip)
+        .limit(limit);
+      const totalProjects = await Project.countDocuments();
 
-    ctx.status = 200;
-    ctx.body = {
-      projects,
-      currentPage: page,
-      totalPages: Math.ceil(totalProjects / limit),
-    };
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = { error: error.message };
+      ctx.status = 200;
+      ctx.body = {
+        projects,
+        currentPage: page,
+        totalPages: Math.ceil(totalProjects / limit),
+      };
+    } catch (error) {
+      ctx.status = 500;
+      ctx.body = { error: error.message };
+    }
+  } else {
+    ctx.status = 401;
+    ctx.body = { message: "Unauthorized" };
   }
 };
 
@@ -98,11 +103,12 @@ const deleteAllResolvedTasks = async ctx => {
   }
 };
 
-const updateTask = async ctx => {
+const updateProjectById = async ctx => {
   const { id } = ctx.params;
-  const updatedTask = await Project.findByIdAndUpdate(id, ctx.request.body, { new: true });
-  if (updatedTask) {
-    ctx.body = updatedTask;
+  const { name, tags } = ctx.request.body;
+  const updatedProject = await Project.findByIdAndUpdate(id, { name, tags }, { new: true });
+  if (updatedProject) {
+    ctx.body = updatedProject;
   } else {
     ctx.status = 404;
     ctx.body = { message: "Project not found" };
@@ -128,12 +134,52 @@ const deleteProjectById = async ctx => {
   ctx.body = { message: "Project and related tasks deleted" };
 };
 
+const findAllProjectsByTag = async ctx => {
+  const { tag } = ctx.params;
+  try {
+    const founds = await Project.find({ tags: tag });
+
+    if (!founds.length) {
+      ctx.status = 404;
+      ctx.body = { error: "No matching projects were found" };
+      return;
+    }
+
+    ctx.status = 200;
+    ctx.body = founds;
+  } catch (err) {
+    ctx.status = 500;
+    ctx.body = { error: "Internal Server Error" };
+  }
+};
+
+const getAllUniqueTags = async ctx => {
+  try {
+    const allTags = await Project.aggregate([
+      { $unwind: "$tags" },
+      { $group: { _id: null, uniqueTags: { $addToSet: "$tags" } } },
+      { $project: { _id: 0, uniqueTags: 1 } },
+    ]);
+
+    if (!allTags.length) {
+      ctx.status = 404;
+      ctx.body = { error: "No tags found" };
+      return;
+    }
+
+    ctx.status = 200;
+    ctx.body = allTags[0].uniqueTags;
+  } catch (err) {
+    ctx.status = 500;
+    ctx.body = { error: "Internal Server Error" };
+  }
+};
+
 module.exports = {
   createProject,
-  getAllProjects,
   getAllProjectsPaginated,
-  // markAllTasksAsDone,
-  // deleteAllResolvedTasks,
-  // updateTask,
+  updateProjectById,
   deleteProjectById,
+  findAllProjectsByTag,
+  getAllUniqueTags,
 };

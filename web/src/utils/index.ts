@@ -25,6 +25,7 @@ export interface Project {
 
 export interface Task {
   _id: string;
+  userId?: string;
   projectId: string;
   content: string;
   resolved: boolean;

@@ -1,13 +1,86 @@
 import { css } from "@emotion/react";
 import { useState } from "react";
 
-import { Task } from "~/data";
+import { Task, filterItems } from "~/utils";
 
+interface UITask extends Task {
+  editing?: boolean;
+}
 interface TaskProps {
-  item: Task;
+  task: UITask;
   _id: string;
   actions: any;
 }
+
+function renderSVG(isDone: boolean) {
+  const circleColor = isDone ? "#bddad5" : "rgba(0, 0, 0, 0.1)";
+  return (
+    <svg
+      width="36"
+      height="36"
+      viewBox="-10 -18 100 135"
+    >
+      <circle
+        cx="50"
+        cy="50"
+        r="50"
+        fill="none"
+        stroke={circleColor}
+        strokeWidth="3"
+      />
+      {isDone && (
+        <path
+          fill="#5dc2af"
+          d="M72 25L42 71 27 56l-4 4 20 20 34-52z"
+        />
+      )}
+    </svg>
+  );
+}
+
+function renderRemoveButton(_id: string, action: any) {
+  return (
+    <span
+      css={remove}
+      onClick={() => action(_id)}
+    >
+      &#x000D7;
+    </span>
+  );
+}
+
+export default (props: TaskProps) => {
+  const [hover, setHover] = useState(false);
+  const toggleHover = () => setHover(!hover);
+
+  return props.task.editing ? (
+    <input
+      css={input}
+      autoFocus={true}
+      value={props.task.content}
+      type="text"
+      onChange={e => props.actions.editItem(props._id, e)}
+      onKeyDown={e => props.actions.saveEditedItem(props._id, e)}
+      onBlur={e => props.actions.saveEditedItem(props._id, e)}
+    />
+  ) : (
+    <li
+      css={[listItem, props.task.resolved && isDone]}
+      onDoubleClick={() => props.actions.setItemIsEditable(props._id)}
+      onMouseEnter={toggleHover}
+      onMouseLeave={toggleHover}
+    >
+      <span
+        css={toggleDone}
+        onClick={() => props.actions.toggleMarkAsDone(props._id)}
+      >
+        {renderSVG(props.task.resolved)}
+      </span>
+      <span css={textWrapper}>{props.task.content}</span>
+      {hover && renderRemoveButton(props._id, props.actions.removeItem)}
+    </li>
+  );
+};
 
 const input = css`
   outline: none;
@@ -71,73 +144,3 @@ const remove = css`
     color: rgba(181, 24, 24, 1);
   }
 `;
-
-function renderSVG(isDone: boolean) {
-  const circleColor = isDone ? "#bddad5" : "rgba(0, 0, 0, 0.1)";
-  return (
-    <svg
-      width="36"
-      height="36"
-      viewBox="-10 -18 100 135"
-    >
-      <circle
-        cx="50"
-        cy="50"
-        r="50"
-        fill="none"
-        stroke={circleColor}
-        strokeWidth="3"
-      />
-      {isDone && (
-        <path
-          fill="#5dc2af"
-          d="M72 25L42 71 27 56l-4 4 20 20 34-52z"
-        />
-      )}
-    </svg>
-  );
-}
-
-function renderRemoveButton(_id: string, action: any) {
-  return (
-    <span
-      css={remove}
-      onClick={() => action(_id)}
-    >
-      &#x000D7;
-    </span>
-  );
-}
-
-export default (props: TaskProps) => {
-  const [hover, setHover] = useState(false);
-  const toggleHover = () => setHover(!hover);
-
-  return props.item.editing ? (
-    <input
-      css={input}
-      autoFocus={true}
-      value={props.item.content}
-      type="text"
-      onChange={e => props.actions.editItem(props._id, e)}
-      onKeyDown={e => props.actions.saveEditedItem(props._id, e)}
-      onBlur={e => props.actions.saveEditedItem(props._id, e)}
-    />
-  ) : (
-    <li
-      css={[listItem, props.item.resolved && isDone]}
-      onDoubleClick={() => props.actions.setItemIsEditable(props._id)}
-      onMouseEnter={toggleHover}
-      onMouseLeave={toggleHover}
-    >
-      <span
-        css={toggleDone}
-        onClick={() => props.actions.toggleMarkAsDone(props._id)}
-      >
-        {renderSVG(props.item.resolved)}
-      </span>
-      <span css={textWrapper}>{props.item.content}</span>
-      {hover && renderRemoveButton(props._id, props.actions.removeItem)}
-    </li>
-  );
-};
