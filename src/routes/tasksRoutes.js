@@ -7,6 +7,7 @@ router.post("/tasks", tasksController.createTask);
 router.get("/tasks", tasksController.getAllTasks);
 router.get("/tasks/:id", tasksController.getAllTasksByProject);
 router.put("/tasks/update-all", tasksController.markAllTasksAsDone);
+
 // DELETE multiple todos by ids
 // Due to delete's limitations of the frontend lib
 // PUT is used for bulk deletion

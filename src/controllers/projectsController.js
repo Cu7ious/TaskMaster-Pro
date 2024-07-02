@@ -23,7 +23,6 @@ const getAllProjectsPaginated = async ctx => {
     const page = parseInt(ctx.request.params.page) || 1;
     const limit = 5;
     const skip = (page - 1) * limit;
-    // console.log(ctx.state.user);
     try {
       const projects = await Project.find({ user: ctx.state.user._id })
         .populate("tasks")
@@ -44,62 +43,6 @@ const getAllProjectsPaginated = async ctx => {
   } else {
     ctx.status = 401;
     ctx.body = { message: "Unauthorized" };
-  }
-};
-
-// Bulk update (Mark all as done)
-const markAllTasksAsDone = async ctx => {
-  const { ids, update } = ctx.request.body;
-
-  if (!Array.isArray(ids) || ids.length === 0) {
-    ctx.status = 400;
-    ctx.body = { error: "Invalid IDs array" };
-    return;
-  }
-
-  try {
-    const result = await Project.updateMany(
-      { _id: { $in: ids } }, // Filter to match documents with the given IDs
-      { $set: update } // Update operation
-    );
-
-    if (result.nModified === 0) {
-      ctx.status = 404;
-      ctx.body = { error: "No tasks found to update" };
-    } else {
-      ctx.status = 200;
-      ctx.body = { message: "Tasks updated successfully", result };
-    }
-  } catch (err) {
-    ctx.status = 500;
-    ctx.body = { error: "Internal Server Error" };
-  }
-};
-
-const deleteAllResolvedTasks = async ctx => {
-  const { ids } = ctx.request.body;
-
-  if (!Array.isArray(ids) || ids.length === 0) {
-    ctx.status = 400;
-    ctx.body = { error: "Invalid IDs array" };
-    return;
-  }
-
-  try {
-    const result = await Project.deleteMany(
-      { _id: { $in: ids } } // Filter to match documents with the given IDs
-    );
-
-    if (result.deletedCount === 0) {
-      ctx.status = 404;
-      ctx.body = { error: "No tasks found to delete" };
-    } else {
-      ctx.status = 200;
-      ctx.body = { message: "Tasks deleted successfully", result };
-    }
-  } catch (err) {
-    ctx.status = 500;
-    ctx.body = { error: "Internal Server Error" };
   }
 };
 
