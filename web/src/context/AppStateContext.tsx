@@ -15,11 +15,10 @@ interface Project {
   user: string;
   tags: string[];
   tasks: Task[];
-  // allTasksDone: boolean;
 }
 
 interface AppState {
-  currentProjectId: string | null;
+  currentProjectId: string;
   currentPage: number;
   totalPages: number;
   projects: Project[];
@@ -27,7 +26,7 @@ interface AppState {
 }
 
 const initialState: AppState = {
-  currentProjectId: null,
+  currentProjectId: "",
   currentPage: 1,
   totalPages: 1,
   projects: [],

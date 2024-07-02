@@ -13,11 +13,12 @@ interface SearchResults {
 export const Search: React.FC = () => {
   const [showSearchUI, setShowSearchUI] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showValidationMessage, setValidationMessage] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
   const handleOpenUI = () => setShowSearchUI(true);
   const handleCloseUI = () => setShowSearchUI(false);
 
-  const handleSearch = e => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     search(e.target.value).then(response => {
       console.log(response.data);
@@ -27,10 +28,16 @@ export const Search: React.FC = () => {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      if (e.target.value.trim() === "") return;
+      if (e.currentTarget.value.trim() === "") {
+        setValidationMessage("Should not be empty");
+        return;
+      }
+
       handleSearch(e);
+      setValidationMessage("");
     } else if (e.key === "Escape") {
       setSearchQuery("");
+      setValidationMessage("");
     }
   };
 
@@ -62,7 +69,7 @@ export const Search: React.FC = () => {
                 autoFocus
                 onKeyDown={handleKeyDown}
               />
-              {/* <div css={validationFlash}>{nameIsInvalid && "Project name is required"}</div> */}
+              <div css={validationFlash}>{showValidationMessage && showValidationMessage}</div>
             </label>
             {searchResults && (
               <footer css={searchFooter}>
@@ -192,4 +199,10 @@ const modalInput = css`
   border-top: 0;
   border-right: 0;
   border-left: 0;
+`;
+
+const validationFlash = css`
+  margin: 10px 0;
+  min-height: 20px;
+  color: red;
 `;

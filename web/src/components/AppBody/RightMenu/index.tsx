@@ -5,7 +5,7 @@ interface RightMenuProps {
   children?: React.ReactNode;
 }
 export const RightMenu: React.FC<RightMenuProps> = ({ children }) => {
-  const [appState, dispatch] = useAppState();
+  const [appState] = useAppState();
   if (appState.projects.length === 0) return null;
   return <section css={rightMenu}>{children}</section>;
 };

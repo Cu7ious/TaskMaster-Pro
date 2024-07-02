@@ -5,7 +5,6 @@ import { Filter, filterItems } from "~/utils";
 import { deleteAllCompletedItems } from "~/API/tasks";
 import Filters from "./Filters";
 
-import { getProject } from "~/utils";
 import { getProjectTasks } from "~/utils";
 export default function AppControls() {
   const [appState, dispatch] = useAppState();

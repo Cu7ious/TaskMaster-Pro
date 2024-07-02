@@ -1,25 +1,10 @@
 import { css } from "@emotion/react";
-import { useCallback, useContext } from "react";
 import { useAppState } from "~/context/AppStateContext";
-
 import { Filter } from "~/utils";
 import { THEME_COLORS } from "~/themeProvider";
 
-// import { getProject } from "~/utils";
-// import { getProjectTasks } from "~/utils";
 export default function Filters() {
   const [appState, dispatch] = useAppState();
-  // const tasks = getProjectTasks(appState.currentProjectId, appState.projects);
-  // const project = getProject(appState.currentProjectId, appState.projects);
-  // project.tasksFilter = project.tasksFilter ? project.tasksFilter : Filter.ALL;
-  // console.log(project.tasksFilter);
-  // console.log(project);
-
-  const activeBtn = {
-    color: "#fff",
-    backgroundColor: `${THEME_COLORS.WORKDAY_BLUE.MAIN_COLOR}`,
-    borderBottomColor: `${THEME_COLORS.WORKDAY_BLUE.MAIN_COLOR_DARK}`,
-  };
   return (
     <div css={filtersBlock}>
       <button
@@ -46,6 +31,12 @@ export default function Filters() {
     </div>
   );
 }
+
+const activeBtn = {
+  color: "#fff",
+  backgroundColor: `${THEME_COLORS.WORKDAY_BLUE.MAIN_COLOR}`,
+  borderBottomColor: `${THEME_COLORS.WORKDAY_BLUE.MAIN_COLOR_DARK}`,
+};
 
 const filtersBlock = css`
   display: inline-block;

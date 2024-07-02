@@ -14,7 +14,6 @@ const list = css`
   background-color: rgba(255, 255, 255, 0.8);
 `;
 
-import { getProject } from "~/utils";
 import { getProjectTasks } from "~/utils";
 
 export const Tasks: React.FC = () => {

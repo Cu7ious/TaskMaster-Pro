@@ -19,7 +19,7 @@ const getCurrentPageName = (id: string, pages: any[]) => {
 
 const AppBody: React.FC = () => {
   const authContext = useContext(AuthContext);
-  const [appState, dispatch] = useAppState();
+  const [appState] = useAppState();
 
   const currentPageName = getCurrentPageName(appState.currentProjectId, appState.projects);
   const appTitle = "TaskMaster Pro";
