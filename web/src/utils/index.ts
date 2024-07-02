@@ -4,25 +4,6 @@ export enum Filter {
   COMPLETED = "completed",
 }
 
-export interface TasksState {
-  projects: Project[];
-  currentPage: number;
-  totalPages: number;
-
-  projectId: string;
-  allDone: boolean;
-  filter: Filter;
-  items: Task[];
-  setState: (props: any) => void;
-}
-
-export interface Project {
-  _id: string;
-  name: string;
-  tags?: string[];
-  tasks: string[];
-}
-
 export interface Task {
   _id: string;
   userId?: string;
@@ -51,9 +32,16 @@ export function filterItems(items: Task[], filter: string): Task[] {
   }
 }
 
-  // Type guard for keyboard events
-  export const isKeyboardEvent = (
-    event: React.FocusEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>
-  ): event is React.KeyboardEvent<HTMLInputElement> => {
-    return (event as React.KeyboardEvent<HTMLInputElement>).key !== undefined;
-  };
+// Type guard for keyboard events
+export const isKeyboardEvent = (
+  event: React.FocusEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>
+): event is React.KeyboardEvent<HTMLInputElement> => {
+  return (event as React.KeyboardEvent<HTMLInputElement>).key !== undefined;
+};
+
+
+export const getProject = (id: string, projects: any[]) => projects.find(proj => proj._id === id);
+
+export const getProjectTasks = (id: string, projects: any[]) => getProject(id, projects)?.tasks;
+
+export const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);

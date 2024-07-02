@@ -1,5 +1,3 @@
-// src/routes/searchRoutes.js
-
 const Router = require("koa-router");
 const searchController = require("../controllers/searchController");
 

@@ -2,6 +2,7 @@ import { MouseEvent } from "react";
 import { useContext, useEffect, useState, useRef } from "react";
 import { isAxiosError } from "axios";
 import { css } from "@emotion/react";
+import { isSafari } from "~/utils";
 
 import { THEME_COLORS } from "~/themeProvider";
 import { AuthContext } from "~/components/auth/AuthContext";
@@ -33,8 +34,7 @@ interface ProjectData {
 const REMOVE_SPACES = /\s+/g;
 const REMOVE_SPECIAL_CHARS = /[^\w\s]/g;
 
-const getProject = (id: string, projects: any[]) => projects.find(proj => proj._id === id);
-const getProjectTasks = (id: string, projects: any[]) => getProject(id, projects)?.tasks;
+import { getProjectTasks } from "~/utils";
 
 export const Projects: React.FC = () => {
   const authContext = useContext(AuthContext);
@@ -99,7 +99,6 @@ export const Projects: React.FC = () => {
               .map(tag => tag.trim().replace(REMOVE_SPACES, "_").replace(REMOVE_SPECIAL_CHARS, ""))
           )
         );
-        // console.log(tags);
       } catch (err) {
         setTagsAreInvalid(true);
         return;
@@ -108,23 +107,14 @@ export const Projects: React.FC = () => {
 
     name = capitalize(projectNameRef.current?.value as string);
     const userId = authContext?.user?._id;
+
     createProject(userId, name, tags).then(res => {
       const newProjects: ProjectData[] = !appState.projects.length
         ? [res.data]
         : [...appState.projects, res.data];
-      // console.log(newProjects);
 
       if (projectNameRef.current) projectNameRef.current.value = "";
-      // setProjects(newProjects);
-      // setActive(res.data._id);
-
-      // dispatch({ type: "SET_CURRENT_PROJECT", payload: res.data._id });
       dispatch({ type: "CREATE_PROJECT", payload: newProjects });
-
-      authContext?.setUser({
-        ...authContext?.user,
-        projects: [...authContext?.user?.projects, res.data._id],
-      });
       setCreationShowModal(false);
     });
   };
@@ -147,7 +137,6 @@ export const Projects: React.FC = () => {
   };
 
   const handleCloseEditProjectModal = () => {
-    // setNameIsInvalid(false);
     setEditionModal(false);
   };
   const handleUpdateProject = (name: string, tags: string) => {
@@ -160,7 +149,7 @@ export const Projects: React.FC = () => {
           .map(tag => tag.trim().replace(REMOVE_SPACES, "_").replace(REMOVE_SPECIAL_CHARS, ""))
       )
     );
-    // console.log(validTags);
+
     updateProjectById(appState.currentProjectId, name, validTags).then(res => {
       const payload = appState.projects.map(proj => {
         if (proj._id === appState.currentProjectId) {
@@ -480,6 +469,8 @@ const menuButtonCSS = css`
   box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.1);
   border-radius: 100px;
   margin-bottom: 5px;
+
+  ${isSafari && "font-size: 13px;"}
 `;
 
 const projectBody = css`

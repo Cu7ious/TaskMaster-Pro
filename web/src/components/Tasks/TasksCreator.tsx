@@ -9,8 +9,7 @@ interface TasksCreatorProps {
   hidden?: boolean;
 }
 
-const getProject = (id: string, projects: any[]) => projects.find(proj => proj._id === id);
-const getProjectTasks = (id: string, projects: any[]) => getProject(id, projects)?.tasks;
+import { getProjectTasks } from "~/utils";
 
 const TasksInput: React.FC<TasksCreatorProps> = ({ hidden }) => {
   const [appState, dispatch] = useAppState();

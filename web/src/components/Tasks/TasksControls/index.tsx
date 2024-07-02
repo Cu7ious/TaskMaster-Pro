@@ -5,8 +5,7 @@ import { Filter, filterItems } from "~/utils";
 import { deleteAllCompletedItems } from "~/API/tasks";
 import Filters from "./Filters";
 
-const getProject = (id: string, projects: any[]) => projects.find(proj => proj._id === id);
-const getProjectTasks = (id: string, projects: any[]) => getProject(id, projects)?.tasks;
+import { getProjectTasks } from "~/utils";
 export default function AppControls() {
   const [appState, dispatch] = useAppState();
   const tasks = getProjectTasks(appState.currentProjectId, appState.projects);
