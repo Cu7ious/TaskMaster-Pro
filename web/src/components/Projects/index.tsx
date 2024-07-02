@@ -2,6 +2,7 @@ import { MouseEvent } from "react";
 import { useContext, useEffect, useState, useRef } from "react";
 import { isAxiosError } from "axios";
 import { css } from "@emotion/react";
+import { isSafari } from "~/utils";
 
 import { THEME_COLORS } from "~/themeProvider";
 import { AuthContext } from "~/components/auth/AuthContext";
@@ -480,6 +481,8 @@ const menuButtonCSS = css`
   box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.1);
   border-radius: 100px;
   margin-bottom: 5px;
+
+  ${isSafari && "font-size: 13px;"}
 `;
 
 const projectBody = css`

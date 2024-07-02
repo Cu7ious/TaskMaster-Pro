@@ -4,6 +4,7 @@ export enum Filter {
   COMPLETED = "completed",
 }
 
+
 export interface TasksState {
   projects: Project[];
   currentPage: number;
@@ -57,3 +58,5 @@ export function filterItems(items: Task[], filter: string): Task[] {
   ): event is React.KeyboardEvent<HTMLInputElement> => {
     return (event as React.KeyboardEvent<HTMLInputElement>).key !== undefined;
   };
+
+export const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);

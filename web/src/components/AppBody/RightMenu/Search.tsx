@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 
 import { search } from "~/API";
 import { Modal } from "~/components/Modals/Modal";
+import { isSafari } from "~/utils";
 
 interface SearchResults {
   projects: any[];
@@ -124,6 +125,8 @@ const menuButtonCSS = css`
   box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.1);
   border-radius: 100px;
   margin-bottom: 5px;
+
+  ${isSafari && "font-size: 13px;"}
 `;
 
 const searchFooter = css`
