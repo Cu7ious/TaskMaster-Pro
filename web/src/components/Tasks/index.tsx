@@ -14,8 +14,8 @@ const list = css`
   background-color: rgba(255, 255, 255, 0.8);
 `;
 
-const getProject = (id: string, projects: any[]) => projects.find(proj => proj._id === id);
-const getProjectTasks = (id: string, projects: any[]) => getProject(id, projects)?.tasks;
+import { getProject } from "~/utils";
+import { getProjectTasks } from "~/utils";
 
 export const Tasks: React.FC = () => {
   const [appState, dispatch] = useAppState();

@@ -5,8 +5,8 @@ import { useAppState } from "~/context/AppStateContext";
 import { Filter } from "~/utils";
 import { THEME_COLORS } from "~/themeProvider";
 
-// const getProject = (id: string, projects: any[]) => projects.find(proj => proj._id === id);
-// const getProjectTasks = (id: string, projects: any[]) => getProject(id, projects)?.tasks;
+// import { getProject } from "~/utils";
+// import { getProjectTasks } from "~/utils";
 export default function Filters() {
   const [appState, dispatch] = useAppState();
   // const tasks = getProjectTasks(appState.currentProjectId, appState.projects);
