@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { apiURL } from "~/API";
+import { apiURL, ApiDesc } from "~/API";
 
 
 export async function getAllProjects(): Promise<AxiosResponse> {
@@ -78,6 +78,20 @@ export async function deleteProjectById(id: string) {
   const url = `${apiURL}/projects/${id}`;
   try {
     return await axios.delete(url);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log("Axios Error:", error);
+    } else {
+      console.log("Unexpected Error:", error);
+    }
+    throw error;
+  }
+}
+
+export async function getProjectsByTag(tag: string): Promise<AxiosResponse> {
+  const url = `${apiURL}/projects/tags/${tag}`;
+  try {
+    return await axios.get<ApiDesc>(url, { withCredentials: true });
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log("Axios Error:", error);
