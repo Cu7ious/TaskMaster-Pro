@@ -1,0 +1,17 @@
+{
+  "configurations": [
+    {
+      "name": "Chrome Launch (localhost:5173)",
+      "url": "http://localhost:5173",
+      "request": "launch",
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}/web"
+    },
+    {
+      "name": "Node.js Launch (Docker)",
+      "type": "docker",
+      "request": "launch",
+      "platform": "node"
+    }
+  ]
+}
