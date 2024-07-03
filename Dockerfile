@@ -1,23 +1,12 @@
-# Use an official Node.js runtime as a parent image
-FROM node:20
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy package.json and package-lock.json to the working directory
+FROM node:lts-alpine
+ENV NODE_ENV=development
+WORKDIR /usr/src/app
 COPY package*.json ./
-
-# Install dependencies
-RUN npm i
-
-# Install nodemon globally
-# RUN npm install -g nodemon
-
-# Copy the rest of the application code to the working directory
+RUN npm i --silent
+RUN npm install -g nodemon
 COPY . .
-
-# Expose the port the app runs on
-EXPOSE 8080
-
-# Define the command to run the application
+EXPOSE 3000
+EXPOSE 9229
+RUN chown -R node /usr/src/app
+USER node
 CMD ["npm", "run", "dev"]
