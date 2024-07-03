@@ -77,7 +77,6 @@ export async function updateProjectById(
 }
 
 export async function deleteProjectById(id: string) {
-  console.log("deleteProjectById param id:", id);
   const url = `${apiURL}/projects/${id}`;
   try {
     return await axios.delete(url, { withCredentials: true });

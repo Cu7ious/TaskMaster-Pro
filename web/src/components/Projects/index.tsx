@@ -1,11 +1,10 @@
 import { MouseEvent } from "react";
-import { useContext, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { isAxiosError } from "axios";
 import { css } from "@emotion/react";
 import { isSafari } from "~/utils";
 
 import { THEME_COLORS } from "~/themeProvider";
-import { AuthContext } from "~/components/auth/AuthContext";
 import { useAppState, Task } from "~/context/AppStateContext";
 import { capitalize } from "~/utils";
 
@@ -37,7 +36,6 @@ const REMOVE_SPECIAL_CHARS = /[^\w\s]/g;
 import { getProjectTasks } from "~/utils";
 
 export const Projects: React.FC = () => {
-  const authContext = useContext(AuthContext);
   const [appState, dispatch] = useAppState();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
