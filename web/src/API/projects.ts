@@ -43,14 +43,10 @@ export async function getProjectById(id: string): Promise<AxiosResponse> {
   }
 }
 
-export async function createProject(
-  userId: string | undefined,
-  name: string,
-  tags: string[]
-): Promise<AxiosResponse> {
+export async function createProject(name: string, tags: string[]): Promise<AxiosResponse> {
   const url = `${apiURL}/projects`;
   try {
-    const response = await axios.post(url, { user: userId, name, tags });
+    const response = await axios.post(url, { name, tags }, { withCredentials: true });
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -69,7 +65,7 @@ export async function updateProjectById(
 ): Promise<AxiosResponse> {
   const url = `${apiURL}/projects/${id}`;
   try {
-    return await axios.put<ApiDesc>(url, { name, tags });
+    return await axios.put<ApiDesc>(url, { name, tags }, { withCredentials: true });
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log("Axios Error:", error);
@@ -84,7 +80,7 @@ export async function deleteProjectById(id: string) {
   console.log("deleteProjectById param id:", id);
   const url = `${apiURL}/projects/${id}`;
   try {
-    return await axios.delete(url);
+    return await axios.delete(url, { withCredentials: true });
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log("Axios Error:", error);

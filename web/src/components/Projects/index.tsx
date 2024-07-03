@@ -57,7 +57,6 @@ export const Projects: React.FC = () => {
   // Deletion Modal
   const [confirmDeletionModal, setConfirmDeletionModal] = useState(false);
   const [toDelete, setToDelete] = useState("");
-  debugger;
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -106,9 +105,7 @@ export const Projects: React.FC = () => {
     }
 
     name = capitalize(projectNameRef.current?.value as string);
-    const userId = authContext?.user?._id;
-
-    createProject(userId, name, tags).then(res => {
+    createProject(name, tags).then(res => {
       const newProjects: ProjectData[] = !appState.projects.length
         ? [res.data]
         : [...appState.projects, res.data];

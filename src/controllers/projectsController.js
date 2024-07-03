@@ -4,7 +4,8 @@ const User = require("../schemas/usersScheme");
 
 const createProject = async ctx => {
   if (ctx.isAuthenticated()) {
-    const { user, name, tags } = ctx.request.body;
+    const user = ctx.state.user._id;
+    const { name, tags } = ctx.request.body;
 
     const project = new Project({
       user,
@@ -12,7 +13,6 @@ const createProject = async ctx => {
       tags,
     });
     await project.save();
-
     await User.findByIdAndUpdate(user, { $push: { projects: project._id } });
 
     ctx.status = 201;
@@ -55,7 +55,9 @@ const updateProjectById = async ctx => {
   if (ctx.isAuthenticated()) {
     const { id } = ctx.params;
     const { name, tags } = ctx.request.body;
+
     const updatedProject = await Project.findByIdAndUpdate(id, { name, tags }, { new: true });
+
     if (updatedProject) {
       ctx.body = updatedProject;
     } else {
@@ -81,6 +83,18 @@ const deleteProjectById = async ctx => {
     if (!(await Task.deleteMany({ projectId: id }))) {
       ctx.status = 500;
       ctx.body = { error: "Server may have failed to delete some tasks related to this project" };
+      return;
+    }
+
+    const user = await User.findByIdAndUpdate(
+      ctx.state.user._id,
+      { $pull: { projects: id } },
+      { new: true }
+    );
+
+    if (!user) {
+      ctx.status = 500;
+      ctx.body = { error: "User not found" };
       return;
     }
 
