@@ -3,19 +3,24 @@ const Task = require("../schemas/tasksScheme");
 const User = require("../schemas/usersScheme");
 
 const createProject = async ctx => {
-  const { user, name, tags } = ctx.request.body;
+  if (ctx.isAuthenticated()) {
+    const { user, name, tags } = ctx.request.body;
 
-  const project = new Project({
-    user,
-    name,
-    tags,
-  });
-  await project.save();
+    const project = new Project({
+      user,
+      name,
+      tags,
+    });
+    await project.save();
 
-  await User.findByIdAndUpdate(user, { $push: { projects: project._id } });
+    await User.findByIdAndUpdate(user, { $push: { projects: project._id } });
 
-  ctx.status = 201;
-  ctx.body = project;
+    ctx.status = 201;
+    ctx.body = project;
+  } else {
+    ctx.status = 401;
+    ctx.body = { message: "Unauthorized" };
+  }
 };
 
 const getAllProjectsPaginated = async ctx => {
@@ -47,74 +52,94 @@ const getAllProjectsPaginated = async ctx => {
 };
 
 const updateProjectById = async ctx => {
-  const { id } = ctx.params;
-  const { name, tags } = ctx.request.body;
-  const updatedProject = await Project.findByIdAndUpdate(id, { name, tags }, { new: true });
-  if (updatedProject) {
-    ctx.body = updatedProject;
+  if (ctx.isAuthenticated()) {
+    const { id } = ctx.params;
+    const { name, tags } = ctx.request.body;
+    const updatedProject = await Project.findByIdAndUpdate(id, { name, tags }, { new: true });
+    if (updatedProject) {
+      ctx.body = updatedProject;
+    } else {
+      ctx.status = 404;
+      ctx.body = { message: "Project not found" };
+    }
   } else {
-    ctx.status = 404;
-    ctx.body = { message: "Project not found" };
+    ctx.status = 401;
+    ctx.body = { message: "Unauthorized" };
   }
 };
 
 const deleteProjectById = async ctx => {
-  const { id } = ctx.params;
+  if (ctx.isAuthenticated()) {
+    const { id } = ctx.params;
 
-  if (!(await Project.findByIdAndDelete(id))) {
-    ctx.status = 404;
-    ctx.body = { error: "Project not found" };
-    return;
-  }
-
-  if (!(await Task.deleteMany({ projectId: id }))) {
-    ctx.status = 500;
-    ctx.body = { error: "Server may have failed to delete some tasks related to this project" };
-    return;
-  }
-
-  ctx.status = 200;
-  ctx.body = { message: "Project and related tasks deleted" };
-};
-
-const findAllProjectsByTag = async ctx => {
-  const { tag } = ctx.params;
-  try {
-    const founds = await Project.find({ tags: tag });
-
-    if (!founds.length) {
+    if (!(await Project.findByIdAndDelete(id))) {
       ctx.status = 404;
-      ctx.body = { error: "No matching projects were found" };
+      ctx.body = { error: "Project not found" };
+      return;
+    }
+
+    if (!(await Task.deleteMany({ projectId: id }))) {
+      ctx.status = 500;
+      ctx.body = { error: "Server may have failed to delete some tasks related to this project" };
       return;
     }
 
     ctx.status = 200;
-    ctx.body = founds;
-  } catch (err) {
-    ctx.status = 500;
-    ctx.body = { error: "Internal Server Error" };
+    ctx.body = { message: "Project and related tasks deleted" };
+  } else {
+    ctx.status = 401;
+    ctx.body = { message: "Unauthorized" };
+  }
+};
+
+const findAllProjectsByTag = async ctx => {
+  if (ctx.isAuthenticated()) {
+    const { tag } = ctx.params;
+    try {
+      const founds = await Project.find({ tags: tag });
+
+      if (!founds.length) {
+        ctx.status = 404;
+        ctx.body = { error: "No matching projects were found" };
+        return;
+      }
+
+      ctx.status = 200;
+      ctx.body = founds;
+    } catch (err) {
+      ctx.status = 500;
+      ctx.body = { error: "Internal Server Error" };
+    }
+  } else {
+    ctx.status = 401;
+    ctx.body = { message: "Unauthorized" };
   }
 };
 
 const getAllUniqueTags = async ctx => {
-  try {
-    const allTags = await Project.aggregate([
-      { $unwind: "$tags" },
-      { $group: { _id: null, uniqueTags: { $addToSet: "$tags" } } },
-      { $project: { _id: 0, uniqueTags: 1 } },
-    ]);
+  if (ctx.isAuthenticated()) {
+    try {
+      const allTags = await Project.aggregate([
+        { $unwind: "$tags" },
+        { $group: { _id: null, uniqueTags: { $addToSet: "$tags" } } },
+        { $project: { _id: 0, uniqueTags: 1 } },
+      ]);
 
-    if (!allTags.length) {
-      ctx.status = 404;
-      ctx.body = { error: "No tags found" };
-      return;
+      if (!allTags.length) {
+        ctx.status = 404;
+        ctx.body = { error: "No tags found" };
+        return;
+      }
+
+      ctx.status = 200;
+      ctx.body = allTags[0].uniqueTags;
+    } catch (err) {
+      ctx.status = 500;
+      ctx.body = { error: "Internal Server Error" };
     }
-
-    ctx.status = 200;
-    ctx.body = allTags[0].uniqueTags;
-  } catch (err) {
-    ctx.status = 500;
-    ctx.body = { error: "Internal Server Error" };
+  } else {
+    ctx.status = 401;
+    ctx.body = { message: "Unauthorized" };
   }
 };
 

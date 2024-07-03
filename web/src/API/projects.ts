@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { apiURL } from "~/API";
-
+import { apiURL, ApiDesc } from "~/API";
 
 export async function getAllProjects(): Promise<AxiosResponse> {
   const url = `${apiURL}/projects/`;
@@ -44,7 +43,11 @@ export async function getProjectById(id: string): Promise<AxiosResponse> {
   }
 }
 
-export async function createProject(userId: string, name: string, tags: string[]): Promise<AxiosResponse> {
+export async function createProject(
+  userId: string | undefined,
+  name: string,
+  tags: string[]
+): Promise<AxiosResponse> {
   const url = `${apiURL}/projects`;
   try {
     const response = await axios.post(url, { user: userId, name, tags });
@@ -59,7 +62,11 @@ export async function createProject(userId: string, name: string, tags: string[]
   }
 }
 
-export async function updateProjectById(id: string, name: string, tags: string[]): Promise<AxiosResponse> {
+export async function updateProjectById(
+  id: string,
+  name: string,
+  tags: string[]
+): Promise<AxiosResponse> {
   const url = `${apiURL}/projects/${id}`;
   try {
     return await axios.put<ApiDesc>(url, { name, tags });
@@ -78,6 +85,20 @@ export async function deleteProjectById(id: string) {
   const url = `${apiURL}/projects/${id}`;
   try {
     return await axios.delete(url);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log("Axios Error:", error);
+    } else {
+      console.log("Unexpected Error:", error);
+    }
+    throw error;
+  }
+}
+
+export async function getProjectsByTag(tag: string): Promise<AxiosResponse> {
+  const url = `${apiURL}/projects/tags/${tag}`;
+  try {
+    return await axios.get<ApiDesc>(url, { withCredentials: true });
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log("Axios Error:", error);

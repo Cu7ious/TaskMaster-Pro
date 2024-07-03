@@ -1,7 +1,7 @@
 import React, { createContext, useReducer, ReactNode, useContext } from "react";
 import { Filter } from "~/utils";
 
-interface Task {
+export interface Task {
   _id: string;
   userID: string;
   projectId: string;
@@ -10,14 +10,15 @@ interface Task {
   editing: boolean;
 }
 
-interface Project {
+export interface Project {
+  _id: string;
   name: string;
   user: string;
   tags: string[];
   tasks: Task[];
 }
 
-interface AppState {
+export interface AppState {
   currentProjectId: string;
   currentPage: number;
   totalPages: number;

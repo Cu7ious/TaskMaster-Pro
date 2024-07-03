@@ -6,7 +6,7 @@ import { isSafari } from "~/utils";
 
 import { THEME_COLORS } from "~/themeProvider";
 import { AuthContext } from "~/components/auth/AuthContext";
-import { useAppState } from "~/context/AppStateContext";
+import { useAppState, Task } from "~/context/AppStateContext";
 import { capitalize } from "~/utils";
 
 import { Modal } from "~/components/Modals/Modal";
@@ -57,7 +57,7 @@ export const Projects: React.FC = () => {
   // Deletion Modal
   const [confirmDeletionModal, setConfirmDeletionModal] = useState(false);
   const [toDelete, setToDelete] = useState("");
-
+  debugger;
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -188,7 +188,7 @@ export const Projects: React.FC = () => {
 
   const handleDeleteProject = (id: ProjectData["_id"], e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    const tasks = getProjectTasks(id, appState.projects);
+    const tasks: Task[] = getProjectTasks(id, appState.projects);
     console.log("tasks: ", tasks);
 
     if (tasks.length > 0 && tasks.find(el => el.resolved === false)) {
