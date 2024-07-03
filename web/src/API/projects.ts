@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { apiURL, ApiDesc } from "~/API";
 
-
 export async function getAllProjects(): Promise<AxiosResponse> {
   const url = `${apiURL}/projects/`;
   try {
@@ -44,7 +43,11 @@ export async function getProjectById(id: string): Promise<AxiosResponse> {
   }
 }
 
-export async function createProject(userId: string, name: string, tags: string[]): Promise<AxiosResponse> {
+export async function createProject(
+  userId: string | undefined,
+  name: string,
+  tags: string[]
+): Promise<AxiosResponse> {
   const url = `${apiURL}/projects`;
   try {
     const response = await axios.post(url, { user: userId, name, tags });
@@ -59,7 +62,11 @@ export async function createProject(userId: string, name: string, tags: string[]
   }
 }
 
-export async function updateProjectById(id: string, name: string, tags: string[]): Promise<AxiosResponse> {
+export async function updateProjectById(
+  id: string,
+  name: string,
+  tags: string[]
+): Promise<AxiosResponse> {
   const url = `${apiURL}/projects/${id}`;
   try {
     return await axios.put<ApiDesc>(url, { name, tags });
