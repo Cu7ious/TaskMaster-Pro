@@ -1,30 +1,5 @@
 import React, { createContext, useReducer, ReactNode, useContext } from "react";
-import { Filter } from "~/utils";
-
-export interface Task {
-  _id: string;
-  userID: string;
-  projectId: string;
-  content: string;
-  resolved: boolean;
-  editing: boolean;
-}
-
-export interface Project {
-  _id: string;
-  name: string;
-  user: string;
-  tags: string[];
-  tasks: Task[];
-}
-
-export interface AppState {
-  currentProjectId: string;
-  currentPage: number;
-  totalPages: number;
-  projects: Project[];
-  tasksFilter: Filter;
-}
+import { AppState, Filter } from "~/types";
 
 const initialState: AppState = {
   currentProjectId: "",
@@ -39,7 +14,6 @@ const AppStateContext = createContext<[AppState, React.Dispatch<any>]>([
   () => initialState,
 ]);
 
-// Action types
 const MARK_ALL_TASKS_AS_RESOLVED = "MARK_ALL_TASKS_AS_RESOLVED";
 const CREATE_TASK = "CREATE_TASK";
 const EDIT_TASK = "EDIT_TASK";

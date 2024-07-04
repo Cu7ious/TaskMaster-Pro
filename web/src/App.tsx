@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { HelmetProvider } from "react-helmet-async";
 
-import AppBody from "~/components/AppBody";
+import AppBody from "~/components/Layout/AppBody";
 
-import { AuthProvider } from "./components/auth/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 
 import { AppStateProvider } from "~/context/AppStateContext";
 

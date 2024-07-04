@@ -1,7 +1,8 @@
 import { css } from "@emotion/react";
 import { useAppState } from "~/context/AppStateContext";
 
-import { Filter, filterItems, Task } from "~/utils";
+import { filterItems } from "~/utils";
+import { Filter, Task } from "~/types";
 import { deleteAllCompletedItems } from "~/API/tasks";
 import Filters from "./Filters";
 

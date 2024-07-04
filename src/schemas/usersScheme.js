@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema({
   profileUrl: String,
   profilePic: String,
   projects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Project" }],
-  tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }],
 });
 
 module.exports = mongoose.model("User", userSchema);

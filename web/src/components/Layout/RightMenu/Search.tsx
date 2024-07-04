@@ -38,9 +38,9 @@ export const Search: React.FC = () => {
   const handleOpenUI = () => setShowSearchUI(true);
   const handleCloseUI = () => setShowSearchUI(false);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    search(e.target.value).then(response => {
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    setSearchQuery(e.currentTarget.value);
+    search(e.currentTarget.value).then(response => {
       console.log(response.data);
       setSearchResults(response.data);
     });
@@ -52,7 +52,6 @@ export const Search: React.FC = () => {
         setValidationMessage("Should not be empty");
         return;
       }
-
       handleSearch(e);
       setValidationMessage("");
     } else if (e.key === "Escape") {

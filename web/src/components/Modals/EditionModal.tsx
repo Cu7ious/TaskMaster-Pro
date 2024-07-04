@@ -4,7 +4,7 @@ import { css } from "@emotion/react";
 
 import { THEME_COLORS } from "~/themeProvider";
 
-export interface ModalProps {
+interface ModalProps {
   projectName: string | undefined;
   projectTags: string[];
   onClose: () => void;
@@ -21,12 +21,12 @@ export const EditionModal: React.FC<ModalProps> = ({
   const [name, setName] = useState(projectName);
   const [tags, setTags] = useState(projectTags.join(", "));
 
-  const handleNameOnChange = e => {
-    setName(e.target.value);
+  const handleNameOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.currentTarget.value);
   };
 
-  const handleTagsOnChange = e => {
-    setTags(e.target.value);
+  const handleTagsOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTags(e.currentTarget.value);
   };
 
   useEffect(() => {

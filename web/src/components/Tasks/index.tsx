@@ -4,7 +4,8 @@ import { AxiosResponse } from "axios";
 import { useAppState } from "~/context/AppStateContext";
 import { ApiDesc } from "~/API";
 import { deleteItemById, updateContentById, updateResolvedById } from "~/API/tasks";
-import { isKeyboardEvent, filterItems, Task } from "~/utils";
+import { filterItems } from "~/utils";
+import { isKeyboardEvent, Task } from "~/types";
 import TaskBox from "./TaskBox";
 
 const list = css`

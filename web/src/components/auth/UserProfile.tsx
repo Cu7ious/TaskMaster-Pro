@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import { apiURL } from "../../API";
 import { css } from "@emotion/react";

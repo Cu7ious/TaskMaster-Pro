@@ -3,7 +3,7 @@ import githubIcon from "~/assets/svg/github.svg";
 import { THEME_COLORS, useTheme } from "~/themeProvider";
 import { css } from "@emotion/react";
 import { useCallback, useContext } from "react";
-import { AuthContext } from "../auth/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const navButton = css`
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAQAAAAB/ecQqAAAAAnRSTlMAAHaTzTgAAAAWSURBVHgBY6AFYP4PBAewUoPbFMoBAE11OPW6yVcZAAAAAElFTkSuQmCC)
