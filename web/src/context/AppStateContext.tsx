@@ -81,7 +81,6 @@ const appStateReducer = (state: AppState, action: any): AppState => {
       };
     case SET_FILTER:
       console.log("filtering tasks");
-      console.log("payload:", action.payload);
       return {
         ...state,
         tasksFilter: action.payload.newFilter,

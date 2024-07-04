@@ -1,11 +1,10 @@
 import { MouseEvent } from "react";
-import { useContext, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { isAxiosError } from "axios";
 import { css } from "@emotion/react";
 import { isSafari } from "~/utils";
 
 import { THEME_COLORS } from "~/themeProvider";
-import { AuthContext } from "~/components/auth/AuthContext";
 import { useAppState, Task } from "~/context/AppStateContext";
 import { capitalize } from "~/utils";
 
@@ -37,7 +36,6 @@ const REMOVE_SPECIAL_CHARS = /[^\w\s]/g;
 import { getProjectTasks } from "~/utils";
 
 export const Projects: React.FC = () => {
-  const authContext = useContext(AuthContext);
   const [appState, dispatch] = useAppState();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -57,7 +55,6 @@ export const Projects: React.FC = () => {
   // Deletion Modal
   const [confirmDeletionModal, setConfirmDeletionModal] = useState(false);
   const [toDelete, setToDelete] = useState("");
-  debugger;
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -106,9 +103,7 @@ export const Projects: React.FC = () => {
     }
 
     name = capitalize(projectNameRef.current?.value as string);
-    const userId = authContext?.user?._id;
-
-    createProject(userId, name, tags).then(res => {
+    createProject(name, tags).then(res => {
       const newProjects: ProjectData[] = !appState.projects.length
         ? [res.data]
         : [...appState.projects, res.data];

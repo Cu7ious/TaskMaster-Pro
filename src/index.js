@@ -1,11 +1,12 @@
 require("dotenv").config();
+
 const Koa = require("koa");
 const { koaBody } = require("koa-body");
 const cors = require("@koa/cors");
-const mongoose = require("mongoose");
 const session = require("koa-session");
-
+const mongoose = require("mongoose");
 const passport = require("koa-passport");
+
 require("./services/passport");
 
 const usersRoutes = require("./routes/usersRoutes");
@@ -41,21 +42,33 @@ app.use(
     credentials: true,
   })
 );
-app.use(koaBody());
+
+app.use(
+  // workaround for koa-body for the delete route, adding ability
+  // to send ids of tasks to be deleted via body
+  // @see https://github.com/koajs/koa-body/issues/163
+  koaBody({
+    parsedMethods: ["GET", "HEAD", "DELETE", "PATCH", "POST", "PUT"],
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Use users routes + handle HTTP method OPTIONS
 app.use(usersRoutes.routes()).use(usersRoutes.allowedMethods());
 
-app.use(tasksRoutes.routes()); // Use todo routes
-app.use(tasksRoutes.allowedMethods()); // Handle HTTP method OPTIONS for todo routes
+// Use projects routes + handle HTTP method OPTIONS
+app.use(projectsRoutes.routes());
+app.use(projectsRoutes.allowedMethods());
 
-app.use(projectsRoutes.routes()); // Use todo routes
-app.use(projectsRoutes.allowedMethods()); // Handle HTTP method OPTIONS for todo routes
+// Use tasks routes + handle HTTP method OPTIONS
+app.use(tasksRoutes.routes());
+app.use(tasksRoutes.allowedMethods());
 
-app.use(searchRoutes.routes()); // Use todo routes
-app.use(searchRoutes.allowedMethods()); // Handle HTTP method OPTIONS for todo routes
+// Use search routes + handle HTTP method OPTIONS
+app.use(searchRoutes.routes());
+app.use(searchRoutes.allowedMethods());
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);

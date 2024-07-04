@@ -24,14 +24,14 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let user = await User.findOne({ githubId: profile.id });
+        const user = await User.findOne({ githubId: profile.id });
         if (!user) {
           user = await new User({
             githubId: profile.id,
             username: profile.username,
             displayName: profile.displayName,
             profileUrl: profile.profileUrl,
-            profilePic: profile.photos[0].value, // Save profile picture URL
+            profilePic: profile.photos[0].value,
           }).save();
         } else {
           // Update profile picture if it changes

@@ -4,14 +4,34 @@ import { css } from "@emotion/react";
 import { search } from "~/API";
 import { Modal } from "~/components/Modals/Modal";
 import { isSafari } from "~/utils";
+import { Project } from "~/context/AppStateContext";
 
 interface SearchResults {
-  projects: any[];
-  tasks: any[];
+  byProjectName: Project[];
+  byTaskContent: Project[];
 }
+
+const markedTextCSS = css`
+  color: #3d4255;
+`;
+
+const highlightSearchQuery = (searchQuery: string, content: string) => {
+  if (!searchQuery) {
+    return content;
+  }
+
+  const regex = new RegExp(searchQuery, "gi");
+  const match = content.match(regex);
+  if (!match) {
+    return content;
+  }
+
+  return content.replace(regex, `<mark css=${markedTextCSS}>${match[0]}</mark>`);
+};
 
 export const Search: React.FC = () => {
   const [showSearchUI, setShowSearchUI] = useState(false);
+  // @ts-ignore
   const [searchQuery, setSearchQuery] = useState("");
   const [showValidationMessage, setValidationMessage] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
@@ -73,40 +93,50 @@ export const Search: React.FC = () => {
             </label>
             {searchResults && (
               <footer css={searchFooter}>
+                <p>By project name:</p>
                 <ul css={searchFooterProjects}>
-                  <p>Projects:</p>
-                  {searchResults?.projects.length > 0 ? (
-                    <ul css={searchFooterTasks}>
-                      {searchResults?.projects?.map(project => (
-                        <li key={project._id}>{project.name}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    0
-                  )}
-                  <p>Tasks:</p>
-                  {searchResults?.tasks.length > 0 ? (
-                    <ul css={searchFooterTasks}>
-                      {searchResults?.tasks?.map(task => (
-                        <li key={task._id}>{task.content}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    0
-                  )}
-                  {/*
-                  Original Idea:
-                  <li>
-                  <p>
-                    Project: <a href="#link-to-project-pageFound">Found Project Name</a>
-                  </p>
-                  <ul css={searchFooterTasks}>
-                    <li>Found Task</li>
-                    <li>Found Task</li>
-                    <li>Found Task</li>
-                    <li>Found Task</li>
-                  </ul>
-                </li> */}
+                  {searchResults?.byProjectName?.map(project => (
+                    <li key={project._id}>
+                      <a
+                        href={`/project/${project._id}`}
+                        dangerouslySetInnerHTML={{
+                          __html: highlightSearchQuery(searchQuery, project.name),
+                        }}
+                      />
+                      <ul css={searchFooterTasks}>
+                        {project.tasks.map(task => {
+                          return (
+                            <li
+                              key={task._id}
+                              dangerouslySetInnerHTML={{
+                                __html: highlightSearchQuery(searchQuery, task.content),
+                              }}
+                            />
+                          );
+                        })}
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+                <p>By tasks content:</p>
+                <ul css={searchFooterProjects}>
+                  {searchResults?.byTaskContent?.map(project => (
+                    <li key={project._id}>
+                      <a href={`/project/${project._id}`}>{project.name}</a>
+                      <ul css={searchFooterTasks}>
+                        {project.tasks.map(task => {
+                          return (
+                            <li
+                              key={task._id}
+                              dangerouslySetInnerHTML={{
+                                __html: highlightSearchQuery(searchQuery, task.content),
+                              }}
+                            />
+                          );
+                        })}
+                      </ul>
+                    </li>
+                  ))}
                 </ul>
               </footer>
             )}
@@ -137,13 +167,14 @@ const menuButtonCSS = css`
 `;
 
 const searchFooter = css`
-  padding: 1rem 0 0 0;
+  padding: 0;
 `;
 
 const searchFooterProjects = css`
   list-style: none;
   padding: 10px 10px 0 10px;
   border: 1px solid #e5e5e5;
+  border-radius: 3px;
   margin: 0 0 15px 0;
 
   :last-child {
@@ -152,12 +183,14 @@ const searchFooterProjects = css`
 `;
 const searchFooterTasks = css`
   list-style: none;
-  padding: 10px 10px 0 10px;
+  padding: 10px 10px 5px 10px;
   border: 1px solid #e5e5e5;
-  margin: 0 0 15px 0;
+  border-radius: 3px;
+  margin: 10px 0 15px;
 
   li {
     padding: 0 0 5px 0;
+    list-style: circle inside;
   }
 `;
 
