@@ -1,8 +1,8 @@
 # TaskMaster Pro - Enhanced To-Do MVC Application
 
-[https://todomvc.com/](https://todomvc.com/)
+My interpretation of [todoMVC](https://todomvc.com/), originally written from scratch in December 2016 ([GitHub Repo](https://github.com/Cu7ious/Classic-ToDo-App ) | [Demo on Codepen](https://codepen.io/Cu7ious/full/bBJqRK))
 
-This application is based on the classic To-Do MVC structure, with several enhancements to provide a more comprehensive and user-friendly experience. It allows users to manage their projects and tasks effectively, with additional features such as user authentication and project/task search.
+This application is based on the classic To-Do MVC structure, with many enhancements to provide a more comprehensive and user-friendly experience. It allows users to manage their projects and tasks effectively, with additional features such as user authentication and project/task search.
 
 ## Features
 
