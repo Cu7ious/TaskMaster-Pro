@@ -4,9 +4,9 @@ import { css } from "@emotion/react";
 
 import { THEME_COLORS } from "~/themeProvider";
 
-export interface ModalProps {
+interface ModalProps {
   onClose: () => void;
-  onSubmit: (...args: any[]) => void;
+  onSubmit: () => void;
 }
 
 const modalRoot = document.getElementById("modal-root");

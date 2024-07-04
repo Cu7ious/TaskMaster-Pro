@@ -1,10 +1,14 @@
 import React, { useContext } from "react";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import { apiURL } from "../../API";
 import { css } from "@emotion/react";
 
-const UserProfile: React.FC<any> = ({ onLogout }) => {
+interface UserProfileProps {
+  onLogout: (activePanel: boolean) => void;
+}
+
+const UserProfile: React.FC<UserProfileProps> = ({ onLogout }) => {
   const authContext = useContext(AuthContext);
 
   if (!authContext) {

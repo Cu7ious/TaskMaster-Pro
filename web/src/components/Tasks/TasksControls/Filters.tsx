@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 import { useAppState } from "~/context/AppStateContext";
-import { Filter } from "~/utils";
+import { Filter } from "~/types";
 import { THEME_COLORS } from "~/themeProvider";
 
 export default function Filters() {

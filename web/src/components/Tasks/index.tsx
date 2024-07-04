@@ -1,31 +1,24 @@
 import { css } from "@emotion/react";
 import { AxiosResponse } from "axios";
 
-import { useAppState } from "~/context/AppStateContext";
+import { DispatchTypes, useAppState } from "~/context/AppStateContext";
 import { ApiDesc } from "~/API";
 import { deleteItemById, updateContentById, updateResolvedById } from "~/API/tasks";
-import { isKeyboardEvent, filterItems } from "~/utils";
-import TaskBox from "./TaskBox";
-
-const list = css`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  background-color: rgba(255, 255, 255, 0.8);
-`;
-
+import { filterItems } from "~/utils";
+import { isKeyboardEvent, Task } from "~/types";
+import { TaskBox } from "./TaskBox";
 import { getProjectTasks } from "~/utils";
 
 export const Tasks: React.FC = () => {
   const [appState, dispatch] = useAppState();
   const tasks = getProjectTasks(appState.currentProjectId, appState.projects);
   const filteredTasks = filterItems(tasks, appState.tasksFilter);
-  function editItem(id: string, e: any) {
+  function editItem(id: string, e: React.ChangeEvent<HTMLInputElement>) {
     const items = [...tasks];
     const itemIdx = items.findIndex(item => item._id === id);
-    items[itemIdx].content = e.target.value;
+    items[itemIdx].content = e.currentTarget.value;
     dispatch({
-      type: "EDIT_TASK",
+      type: DispatchTypes.EDIT_TASK,
       payload: { id: appState.currentProjectId, newTasks: [...items] },
     });
   }
@@ -35,14 +28,13 @@ export const Tasks: React.FC = () => {
     const updatedIdx = updatedItems.findIndex(itm => itm._id === id);
     updatedItems[updatedIdx] = { ...res.data, editing: false };
     dispatch({
-      type: "UNMARK_TASK_EDITABLE",
+      type: DispatchTypes.UNMARK_TASK_EDITABLE,
       payload: { id: appState.currentProjectId, newTasks: updatedItems },
     });
   };
 
   const saveEditedItem = (
     id: string,
-    // e: any
     e: React.KeyboardEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>
   ) => {
     const items = [...tasks];
@@ -51,7 +43,7 @@ export const Tasks: React.FC = () => {
       if (e.code === "Escape") {
         items[index].editing = false;
         dispatch({
-          type: "UNMARK_TASK_EDITABLE",
+          type: DispatchTypes.UNMARK_TASK_EDITABLE,
           payload: { id: appState.currentProjectId, newTasks: items },
         });
         return;
@@ -63,7 +55,7 @@ export const Tasks: React.FC = () => {
     } else {
       items[index].editing = false;
       dispatch({
-        type: "UNMARK_TASK_EDITABLE",
+        type: DispatchTypes.UNMARK_TASK_EDITABLE,
         payload: { id: appState.currentProjectId, newTasks: items },
       });
       updateContentById(id, items[index].content).then(res => _saveEditedItemCallback(res, id));
@@ -71,13 +63,13 @@ export const Tasks: React.FC = () => {
   };
 
   function removeItem(id: string) {
-    deleteItemById(id).then(res => {
-      if ((res as any)?.status === 204) {
+    deleteItemById(appState.currentProjectId, id).then(res => {
+      if ((res as any)?.status === 200) {
         const items = [...tasks];
-        const index = tasks.findIndex(item => item._id === id);
-        items.splice(index, 1);
+        const index = tasks && tasks.findIndex((item: Task) => item._id === id);
+        index && items.splice(index, 1);
         dispatch({
-          type: "DELETE_TASK",
+          type: DispatchTypes.DELETE_TASK,
           payload: { id: appState.currentProjectId, newTasks: items },
         });
       }
@@ -89,19 +81,19 @@ export const Tasks: React.FC = () => {
     const index = items.findIndex(item => item._id === id);
     items[index].editing = true;
     dispatch({
-      type: "MARK_TASK_EDITABLE",
+      type: DispatchTypes.MARK_TASK_EDITABLE,
       payload: { id: appState.currentProjectId, newTasks: items },
     });
   }
 
   function toggleMarkAsDone(id: string) {
-    const toggledResolve = !tasks.filter(item => item._id === id)[0].resolved;
+    const toggledResolve = !tasks.filter((item: Task) => item._id === id)[0].resolved;
     updateResolvedById(id, toggledResolve).then(res => {
-      const updatedIdx = tasks.findIndex(itm => itm._id === id);
+      const updatedIdx = tasks.findIndex((itm: Task) => itm._id === id);
       const updatedItems = [...tasks];
       updatedItems[updatedIdx] = { ...res.data, editing: false };
       dispatch({
-        type: "TOGGLE_RESOLVE_TASK",
+        type: DispatchTypes.TOGGLE_RESOLVE_TASK,
         payload: { id: appState.currentProjectId, newTasks: updatedItems },
       });
     });
@@ -126,3 +118,10 @@ export const Tasks: React.FC = () => {
     </ul>
   );
 };
+
+const list = css`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+`;

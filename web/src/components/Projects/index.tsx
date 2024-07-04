@@ -3,9 +3,11 @@ import { useEffect, useState, useRef } from "react";
 import { isAxiosError } from "axios";
 import { css } from "@emotion/react";
 import { isSafari } from "~/utils";
+import { Project as ProjectData } from "~/types";
 
 import { THEME_COLORS } from "~/themeProvider";
-import { useAppState, Task } from "~/context/AppStateContext";
+import { DispatchTypes, useAppState } from "~/context/AppStateContext";
+import { Project, Task } from "~/types";
 import { capitalize } from "~/utils";
 
 import { Modal } from "~/components/Modals/Modal";
@@ -22,13 +24,6 @@ import {
 import { Tasks } from "~/components/Tasks";
 import TasksControls from "~/components/Tasks/TasksControls";
 import TaskCreator from "~/components/Tasks/TasksCreator";
-
-interface ProjectData {
-  _id: string;
-  name: string;
-  tags?: string[];
-  tasks?: string[];
-}
 
 const REMOVE_SPACES = /\s+/g;
 const REMOVE_SPECIAL_CHARS = /[^\w\s]/g;
@@ -61,7 +56,14 @@ export const Projects: React.FC = () => {
       try {
         const response = await getAllProjectsPaginated(currentPage);
         if (response.data.projects.length > 0) {
-          dispatch({ type: "SET_PROJECTS_PAGINATED", payload: response.data });
+          dispatch({
+            type: DispatchTypes.SET_PROJECTS_PAGINATED,
+            payload: {
+              newProjects: response.data.projects,
+              currentPage: response.data.currentPage,
+              totalPages: response.data.totalPages,
+            },
+          });
         }
       } catch (error) {
         if (isAxiosError(error)) {
@@ -74,7 +76,7 @@ export const Projects: React.FC = () => {
       }
     };
     fetchData();
-  }, [currentPage]);
+  }, [currentPage, dispatch]);
 
   const handleCreateNewProject = () => {
     let name: string = "";
@@ -109,13 +111,13 @@ export const Projects: React.FC = () => {
         : [...appState.projects, res.data];
 
       if (projectNameRef.current) projectNameRef.current.value = "";
-      dispatch({ type: "CREATE_PROJECT", payload: newProjects });
+      dispatch({ type: DispatchTypes.CREATE_PROJECT, payload: { newProjects } });
       setCreationShowModal(false);
     });
   };
 
-  const handleSwitchCurrentProject = (id: any) => {
-    dispatch({ type: "SET_CURRENT_PROJECT", payload: id });
+  const handleSwitchCurrentProject = (id: Project["_id"]) => {
+    dispatch({ type: DispatchTypes.SET_CURRENT_PROJECT, payload: { currentProjectId: id } });
   };
 
   const handleOpenProjectModal = () => {
@@ -134,7 +136,8 @@ export const Projects: React.FC = () => {
   const handleCloseEditProjectModal = () => {
     setEditionModal(false);
   };
-  const handleUpdateProject = (name: string, tags: string) => {
+  const handleUpdateProject = (name: string | undefined, tags: string) => {
+    if (!name) return;
     const validTags = Array.from(
       new Set(
         tags
@@ -146,15 +149,14 @@ export const Projects: React.FC = () => {
     );
 
     updateProjectById(appState.currentProjectId, name, validTags).then(res => {
-      const payload = appState.projects.map(proj => {
+      const newProjects = appState.projects.map(proj => {
         if (proj._id === appState.currentProjectId) {
-          proj.name = name;
-          proj.tags = validTags;
+          proj.name = res.data.name;
+          proj.tags = res.data.tags;
         }
         return proj;
       });
-      dispatch({ type: "UPDATE_PROJECT", payload });
-      console.log(res.data);
+      dispatch({ type: DispatchTypes.UPDATE_PROJECT, payload: { newProjects } });
       console.log("handleUpdateProject:", name, tags);
       setEditionModal(false);
     });
@@ -170,12 +172,12 @@ export const Projects: React.FC = () => {
 
       if (appState.currentProjectId === id && remainingProjects.length > 0) {
         dispatch({
-          type: "SET_CURRENT_PROJECT",
-          payload: remainingProjects[remainingProjects.length - 1]._id,
+          type: DispatchTypes.SET_CURRENT_PROJECT,
+          payload: { currentProjectId: remainingProjects[remainingProjects.length - 1]._id },
         });
       }
 
-      dispatch({ type: "SET_PROJECTS", payload: remainingProjects });
+      dispatch({ type: DispatchTypes.SET_PROJECTS, payload: { newProjects: remainingProjects } });
       setToDelete("");
       setConfirmDeletionModal(false);
     });
@@ -183,10 +185,8 @@ export const Projects: React.FC = () => {
 
   const handleDeleteProject = (id: ProjectData["_id"], e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    const tasks: Task[] = getProjectTasks(id, appState.projects);
-    console.log("tasks: ", tasks);
-
-    if (tasks.length > 0 && tasks.find(el => el.resolved === false)) {
+    const tasks: Task[] | undefined = getProjectTasks(id, appState.projects);
+    if (tasks && tasks.length > 0 && tasks.find(el => el.resolved === false)) {
       setToDelete(id);
       setConfirmDeletionModal(true);
     } else {

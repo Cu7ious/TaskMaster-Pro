@@ -4,7 +4,7 @@ import { css } from "@emotion/react";
 import { search } from "~/API";
 import { Modal } from "~/components/Modals/Modal";
 import { isSafari } from "~/utils";
-import { Project } from "~/context/AppStateContext";
+import { Project } from "~/types";
 
 interface SearchResults {
   byProjectName: Project[];
@@ -31,16 +31,15 @@ const highlightSearchQuery = (searchQuery: string, content: string) => {
 
 export const Search: React.FC = () => {
   const [showSearchUI, setShowSearchUI] = useState(false);
-  // @ts-ignore
   const [searchQuery, setSearchQuery] = useState("");
   const [showValidationMessage, setValidationMessage] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
   const handleOpenUI = () => setShowSearchUI(true);
   const handleCloseUI = () => setShowSearchUI(false);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    search(e.target.value).then(response => {
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    setSearchQuery(e.currentTarget.value);
+    search(e.currentTarget.value).then(response => {
       console.log(response.data);
       setSearchResults(response.data);
     });
@@ -52,7 +51,6 @@ export const Search: React.FC = () => {
         setValidationMessage("Should not be empty");
         return;
       }
-
       handleSearch(e);
       setValidationMessage("");
     } else if (e.key === "Escape") {

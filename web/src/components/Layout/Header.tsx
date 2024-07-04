@@ -1,9 +1,102 @@
-import byCu7iousWatermark from "~/assets/svg/by-Cu7ious-watermark-white.svg";
-import githubIcon from "~/assets/svg/github.svg";
-import { THEME_COLORS, useTheme } from "~/themeProvider";
-import { css } from "@emotion/react";
 import { useCallback, useContext } from "react";
-import { AuthContext } from "../auth/AuthContext";
+import { css } from "@emotion/react";
+import { AuthContext } from "~/context/AuthContext";
+import byCu7iousWatermark from "~/assets/svg/by-CU7IOUS-Watermark-White.svg";
+import githubIcon from "~/assets/svg/github.svg";
+import { THEME_COLORS } from "~/themeProvider";
+import { User } from "~/types";
+
+interface HeaderProps {
+  setActivePanel: (activePanel: boolean) => void;
+}
+export default function Header(props: HeaderProps) {
+  const authContext = useContext(AuthContext);
+  const openSidebar = useCallback(() => props.setActivePanel(true), [props]);
+  const user = authContext?.user as User;
+  return (
+    <header css={[header, headerColors]}>
+      <div css={headerLogo}>
+        <h1
+          css={[headerLeft, H1]}
+          title="TaskMaster Pro"
+        >
+          <button
+            css={navButton}
+            onClick={openSidebar}
+          />
+          <span css={logoText}>TaskMaster Pro</span>
+          <svg
+            css={logoSVG}
+            width="27px"
+            height="20px"
+            viewBox="0 0 27 20"
+          >
+            <g
+              stroke="none"
+              strokeWidth="1"
+              fill="none"
+              fillRule="evenodd"
+            >
+              <g
+                transform="translate(-396.000000, -3254.000000)"
+                fill="#FFFFFF"
+              >
+                <polygon
+                  transform="translate(409.502930, 3263.995337) scale(1, -1) translate(-409.502930, -3263.995337)"
+                  points="406.412678 3254.8501 422.207764 3269.49995 418.511719 3273.14058 406.412678 3261.72944
+                    400.39917 3267.03779 396.798096 3263.45283"
+                />
+              </g>
+            </g>
+          </svg>
+        </h1>
+      </div>
+      <div css={headerCenter}>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://cu7io.us/"
+        >
+          <img
+            css={brandLogo}
+            src={byCu7iousWatermark}
+            alt="Created by CU7IOUS"
+          />
+        </a>
+      </div>
+      <div css={headerRight}>
+        {user ? (
+          <img
+            css={userAvatar}
+            src={user.profilePic}
+            alt="User Avatar"
+          />
+        ) : (
+          <a
+            css={githubBadge}
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://github.com/Cu7ious/"
+          >
+            <img
+              src={githubIcon}
+              alt="See more on GitHub"
+            />
+          </a>
+        )}
+      </div>
+    </header>
+  );
+}
+
+const headerColors = css`
+  background-image: linear-gradient(
+    to right,
+    ${THEME_COLORS.WORKDAY_BLUE.MAIN_COLOR},
+    ${THEME_COLORS.WORKDAY_BLUE.MAIN_COLOR_DARK}
+  );
+  border-bottom: 4px solid ${THEME_COLORS.WORKDAY_BLUE.MAIN_COLOR_DARK};
+`;
 
 const navButton = css`
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAQAAAAB/ecQqAAAAAnRSTlMAAHaTzTgAAAAWSURBVHgBY6AFYP4PBAewUoPbFMoBAE11OPW6yVcZAAAAAElFTkSuQmCC)
@@ -89,98 +182,6 @@ const headerLogo = css`
     }
   }
 `;
-
-export default function Header(props: any) {
-  const authContext = useContext(AuthContext);
-  const [{ appTheme }] = useTheme();
-  const openSidebar = useCallback(() => props.setActivePanel(true), [props]);
-
-  const headerColors = css`
-    background-image: linear-gradient(
-      to right,
-      ${(THEME_COLORS as any)[appTheme].MAIN_COLOR},
-      ${(THEME_COLORS as any)[appTheme].MAIN_COLOR_DARK}
-    );
-    border-bottom: 4px solid ${(THEME_COLORS as any)[appTheme].MAIN_COLOR_DARK};
-  `;
-
-  const { user } = authContext;
-
-  return (
-    <header css={[header, headerColors]}>
-      <div css={headerLogo}>
-        <h1
-          css={[headerLeft, H1]}
-          title="TaskMaster Pro"
-        >
-          <button
-            css={navButton}
-            onClick={openSidebar}
-          />
-          <span css={logoText}>TaskMaster Pro</span>
-          <svg
-            css={logoSVG}
-            width="27px"
-            height="20px"
-            viewBox="0 0 27 20"
-          >
-            <g
-              stroke="none"
-              strokeWidth="1"
-              fill="none"
-              fillRule="evenodd"
-            >
-              <g
-                transform="translate(-396.000000, -3254.000000)"
-                fill="#FFFFFF"
-              >
-                <polygon
-                  transform="translate(409.502930, 3263.995337) scale(1, -1) translate(-409.502930, -3263.995337)"
-                  points="406.412678 3254.8501 422.207764 3269.49995 418.511719 3273.14058 406.412678 3261.72944
-                    400.39917 3267.03779 396.798096 3263.45283"
-                />
-              </g>
-            </g>
-          </svg>
-        </h1>
-      </div>
-      <div css={headerCenter}>
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://cu7io.us/"
-        >
-          <img
-            css={brandLogo}
-            src={byCu7iousWatermark}
-            alt="Created by CU7IOUS"
-          />
-        </a>
-      </div>
-      <div css={headerRight}>
-        {user ? (
-          <img
-            css={userAvatar}
-            src={user.profilePic}
-            alt="User Avatar"
-          />
-        ) : (
-          <a
-            css={githubBadge}
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://github.com/Cu7ious/"
-          >
-            <img
-              src={githubIcon}
-              alt="See more on GitHub"
-            />
-          </a>
-        )}
-      </div>
-    </header>
-  );
-}
 
 const userAvatar = css`
   ${githubBadge}

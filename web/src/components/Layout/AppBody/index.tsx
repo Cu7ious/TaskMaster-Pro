@@ -1,20 +1,21 @@
 import { useContext } from "react";
 import { css } from "@emotion/react";
 
-import { AuthContext } from "~/components/auth/AuthContext";
+import { AuthContext } from "~/context/AuthContext";
 import { useAppState } from "~/context/AppStateContext";
-import Panel from "~/components/Layout/Panel";
+import { Panel } from "~/components/Layout/Panel";
 
 import { Projects } from "~/components/Projects";
 
-import { RightMenu } from "./RightMenu";
-import { Search } from "./RightMenu/Search";
-import { TagsExplorer } from "./RightMenu/TagsExplorer";
+import { RightMenu } from "../RightMenu";
+import { Search } from "../RightMenu/Search";
+import { TagsExplorer } from "../RightMenu/TagsExplorer";
 import { Helmet } from "react-helmet-async";
-import Login from "~/components/auth/Login";
+import Login from "~/components/Auth/Login";
+import { Project } from "~/types";
 
-const getCurrentPageName = (id: string, pages: any[]) => {
-  return pages.find(proj => proj._id === id)?.name;
+const getCurrentPageName = (id: string, projects: Project[]) => {
+  return projects.find(project => project._id === id)?.name;
 };
 
 const AppBody: React.FC = () => {
@@ -30,7 +31,7 @@ const AppBody: React.FC = () => {
       <Helmet>
         <title>{windowTitle}</title>
       </Helmet>
-      <Panel title={currentPageName} />
+      <Panel title={windowTitle} />
       <div css={taskMasterApp}>
         <div css={appWrapper}>
           <RightMenu>

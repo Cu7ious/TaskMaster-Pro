@@ -1,13 +1,17 @@
-import byCu7iousWatermark from "~/assets/svg/by-Cu7ious-watermark-black.svg";
-import { THEME_COLORS, useTheme } from "~/themeProvider";
+import byCU7IOUSWatermark from "~/assets/svg/by-CU7IOUS-Watermark-Black.svg";
+import { THEME_COLORS } from "~/themeProvider";
 import { css } from "@emotion/react";
-import { useCallback } from "react";
-import UserProfile from "~/components/auth/UserProfile";
+import UserProfile from "~/components/Auth/UserProfile";
 
-export default function Sidebar(props: any) {
-  const [{ appTheme }] = useTheme();
-  const color = { color: `${(THEME_COLORS as any)[appTheme].MAIN_COLOR}` };
-  const closeSidebar = useCallback(() => props.setActivePanel(false), [props.activePanel]);
+interface SidebarProps {
+  activePanel: boolean;
+  setActivePanel: (activePanel: boolean) => void;
+}
+
+export default function Sidebar(props: SidebarProps) {
+  // const [{ appTheme }] = useTheme();
+  const color = { color: `${THEME_COLORS.WORKDAY_BLUE.MAIN_COLOR}` };
+  const closeSidebar = () => props.setActivePanel(false);
 
   return (
     <>
@@ -37,7 +41,7 @@ export default function Sidebar(props: any) {
               href="https://cu7io.us/"
             >
               <img
-                src={byCu7iousWatermark}
+                src={byCU7IOUSWatermark}
                 alt="Created by CU7IOUS"
               />
             </a>
