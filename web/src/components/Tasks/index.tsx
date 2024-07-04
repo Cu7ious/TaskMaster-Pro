@@ -4,7 +4,7 @@ import { AxiosResponse } from "axios";
 import { useAppState } from "~/context/AppStateContext";
 import { ApiDesc } from "~/API";
 import { deleteItemById, updateContentById, updateResolvedById } from "~/API/tasks";
-import { isKeyboardEvent, filterItems } from "~/utils";
+import { isKeyboardEvent, filterItems, Task } from "~/utils";
 import TaskBox from "./TaskBox";
 
 const list = css`
@@ -42,7 +42,6 @@ export const Tasks: React.FC = () => {
 
   const saveEditedItem = (
     id: string,
-    // e: any
     e: React.KeyboardEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>
   ) => {
     const items = [...tasks];
@@ -71,10 +70,10 @@ export const Tasks: React.FC = () => {
   };
 
   function removeItem(id: string) {
-    deleteItemById(id).then(res => {
-      if ((res as any)?.status === 204) {
+    deleteItemById(appState.currentProjectId, id).then(res => {
+      if ((res as any)?.status === 200) {
         const items = [...tasks];
-        const index = tasks.findIndex(item => item._id === id);
+        const index = tasks.findIndex((item: Task) => item._id === id);
         items.splice(index, 1);
         dispatch({
           type: "DELETE_TASK",
@@ -95,9 +94,9 @@ export const Tasks: React.FC = () => {
   }
 
   function toggleMarkAsDone(id: string) {
-    const toggledResolve = !tasks.filter(item => item._id === id)[0].resolved;
+    const toggledResolve = !tasks.filter((item: Task) => item._id === id)[0].resolved;
     updateResolvedById(id, toggledResolve).then(res => {
-      const updatedIdx = tasks.findIndex(itm => itm._id === id);
+      const updatedIdx = tasks.findIndex((itm: Task) => itm._id === id);
       const updatedItems = [...tasks];
       updatedItems[updatedIdx] = { ...res.data, editing: false };
       dispatch({

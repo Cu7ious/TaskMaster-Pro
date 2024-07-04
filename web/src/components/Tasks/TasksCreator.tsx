@@ -1,9 +1,8 @@
 import { css } from "@emotion/react";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { capitalize } from "~/utils";
 import { saveAllResolved, createItem } from "~/API/tasks";
-import { useAppState } from "~/context/AppStateContext";
-import { AuthContext } from "~/components/auth/AuthContext";
+import { useAppState, Task } from "~/context/AppStateContext";
 
 interface TasksCreatorProps {
   hidden?: boolean;
@@ -14,21 +13,20 @@ import { getProjectTasks } from "~/utils";
 const TasksInput: React.FC<TasksCreatorProps> = ({ hidden }) => {
   const [appState, dispatch] = useAppState();
 
-  const auth = useContext(AuthContext);
   const [inputValue, setInputValue] = useState("");
   const projectTasks = getProjectTasks(appState.currentProjectId, appState.projects);
   const isEmpty = projectTasks.length === 0;
 
   function markAllAsResolved() {
-    const ids = projectTasks.map(itm => itm._id);
-    const resolved = !projectTasks.every(itm => itm.resolved);
+    const ids = projectTasks.map((itm: Task) => itm._id);
+    const resolved = !projectTasks.every((itm: Task) => itm.resolved);
     saveAllResolved(ids, resolved).then(() => {
       console.log("resolved:", resolved);
       dispatch({
         type: "MARK_ALL_TASKS_AS_RESOLVED",
         payload: {
           id: appState.currentProjectId,
-          newTasks: projectTasks.map(itm => {
+          newTasks: projectTasks.map((itm: Task) => {
             return { ...itm, resolved };
           }),
         },
@@ -43,7 +41,7 @@ const TasksInput: React.FC<TasksCreatorProps> = ({ hidden }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       if (inputValue.trim() === "") return;
-      createItem(auth?.user?._id, appState.currentProjectId, capitalize(inputValue)).then(res => {
+      createItem(appState.currentProjectId, capitalize(inputValue)).then(res => {
         setInputValue("");
         dispatch({
           type: "CREATE_TASK",

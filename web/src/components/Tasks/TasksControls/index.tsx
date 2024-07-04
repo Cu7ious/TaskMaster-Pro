@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 import { useAppState } from "~/context/AppStateContext";
 
-import { Filter, filterItems } from "~/utils";
+import { Filter, filterItems, Task } from "~/utils";
 import { deleteAllCompletedItems } from "~/API/tasks";
 import Filters from "./Filters";
 
@@ -11,11 +11,13 @@ export default function AppControls() {
   const tasks = getProjectTasks(appState.currentProjectId, appState.projects);
 
   function clearAllCompleted() {
-    const ids = tasks.filter(itm => itm.resolved).map(itm => itm._id);
+    const ids = tasks.map((itm: Task) => {
+      if (itm.resolved) return itm._id;
+    });
     ids.length > 0 &&
-      deleteAllCompletedItems(ids).then(res => {
+      deleteAllCompletedItems(appState.currentProjectId, ids).then(res => {
         if ((res as any)?.status === 200) {
-          const items = tasks.filter(item => item.resolved !== true);
+          const items = tasks.filter((item: Task) => item.resolved !== true);
           dispatch({
             type: "CLEAR_ALL_COMPLETED_TASKS",
             payload: { id: appState.currentProjectId, newTasks: items },
