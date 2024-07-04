@@ -1,11 +1,12 @@
 require("dotenv").config();
+
 const Koa = require("koa");
 const { koaBody } = require("koa-body");
 const cors = require("@koa/cors");
-const mongoose = require("mongoose");
 const session = require("koa-session");
-
+const mongoose = require("mongoose");
 const passport = require("koa-passport");
+
 require("./services/passport");
 
 const usersRoutes = require("./routes/usersRoutes");
@@ -41,7 +42,15 @@ app.use(
     credentials: true,
   })
 );
-app.use(koaBody());
+
+app.use(
+  // workaround for koa-body for the delete route, adding ability
+  // to send ids of tasks to be deleted via body
+  // @see https://github.com/koajs/koa-body/issues/163
+  koaBody({
+    parsedMethods: ["GET", "HEAD", "DELETE", "PATCH", "POST", "PUT"],
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
