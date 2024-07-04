@@ -12,7 +12,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ onLogout }) => {
   const authContext = useContext(AuthContext);
 
   if (!authContext) {
-    return <p>Error: AuthContext not available</p>;
+    return <p>Error: Auth context not available</p>;
   }
 
   const { user, setUser } = authContext;
