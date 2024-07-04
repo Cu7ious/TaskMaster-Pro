@@ -13,19 +13,44 @@ exports.search = async ctx => {
     }
 
     try {
-      const projectResults = await Project.find({
+      const matchingProjects = await Project.find({
         user: userId,
-        $or: [{ name: new RegExp(query, "i") }, { tags: new RegExp(query, "i") }],
-      }).exec();
+        name: new RegExp(query, "i"),
+      })
+        .populate("tasks")
+        .exec();
 
-      const taskResults = await Task.find({
-        userId: userId,
-        content: new RegExp(query, "i"),
-      }).exec();
+      const matchingProjectsWithFilteredTasks = matchingProjects.map(project => {
+        const filteredTasks = project.tasks.filter(task => {
+          return task.content.toLowerCase().includes(query.toLowerCase());
+        });
+        project.tasks = filteredTasks;
+        return project;
+      });
 
+      const matchingTasks = await Task.find({
+        userId,
+        content: { $regex: new RegExp(query, "i") },
+      });
+
+      const projectIds = [...new Set(matchingTasks.map(task => task.projectId))];
+      const projectsForMatchingTasks = await Project.find({
+        user: userId,
+        _id: { $in: projectIds },
+      }).populate("tasks");
+
+      const projectsForMatchingTasksWithFilteredTasks = projectsForMatchingTasks.map(project => {
+        const filteredTasks = project.tasks.filter(task => {
+          return task.content.toLowerCase().includes(query.toLowerCase());
+        });
+        project.tasks = filteredTasks;
+        return project;
+      });
+
+      ctx.status = 200;
       ctx.body = {
-        projects: projectResults,
-        tasks: taskResults,
+        byProjectName: matchingProjectsWithFilteredTasks,
+        byTaskContent: projectsForMatchingTasksWithFilteredTasks,
       };
     } catch (error) {
       ctx.status = 500;
