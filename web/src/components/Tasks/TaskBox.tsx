@@ -1,15 +1,27 @@
 import { css } from "@emotion/react";
 import { useState } from "react";
 
-import { Task, filterItems } from "~/utils";
+import { Task } from "~/types";
 
 interface UITask extends Task {
   editing?: boolean;
 }
-interface TaskProps {
+
+interface TaskBoxActions {
+  editItem: (id: string, e: React.ChangeEvent<HTMLInputElement>) => void;
+  saveEditedItem: (
+    id: string,
+    e: React.KeyboardEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>
+  ) => void;
+  setItemIsEditable: (id: string) => void;
+  toggleMarkAsDone: (id: string) => void;
+  removeItem: (id: string) => void;
+}
+
+interface TaskBoxProps {
   task: UITask;
   _id: string;
-  actions: any;
+  actions: TaskBoxActions;
 }
 
 function renderSVG(isDone: boolean) {
@@ -38,7 +50,7 @@ function renderSVG(isDone: boolean) {
   );
 }
 
-function renderRemoveButton(_id: string, action: any) {
+function renderRemoveButton(_id: string, action: TaskBoxActions["removeItem"]) {
   return (
     <span
       css={remove}
@@ -49,7 +61,7 @@ function renderRemoveButton(_id: string, action: any) {
   );
 }
 
-export default (props: TaskProps) => {
+export const TaskBox = (props: TaskBoxProps) => {
   const [hover, setHover] = useState(false);
   const toggleHover = () => setHover(!hover);
 

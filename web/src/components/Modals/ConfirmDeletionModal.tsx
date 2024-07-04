@@ -6,7 +6,7 @@ import { THEME_COLORS } from "~/themeProvider";
 
 interface ModalProps {
   onClose: () => void;
-  onSubmit: (...args: any[]) => void;
+  onSubmit: () => void;
 }
 
 const modalRoot = document.getElementById("modal-root");

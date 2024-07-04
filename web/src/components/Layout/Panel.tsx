@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 
-export default ({ title }) => {
+export const Panel: React.FC<{ title: string }> = ({ title }) => {
   return (
     <div css={panel}>
       <h3 css={text}>{title || "Plan Smart, Solve Better"}</h3>

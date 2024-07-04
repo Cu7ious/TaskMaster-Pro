@@ -1,4 +1,4 @@
-import { createContext, Dispatch, useContext, useReducer } from "react";
+// import { createContext, Dispatch, useContext, useReducer } from "react";
 
 export enum THEME {
   WORKDAY_BLUE = "WORKDAY_BLUE",
@@ -21,29 +21,29 @@ export const THEME_COLORS: ThemeColors = {
   BRAVE_SKY: { MAIN_COLOR: "#0393d6", MAIN_COLOR_DARK: "#a264b2" },
 };
 
-interface AppTheme {
-  appTheme: THEME;
-}
-type ThemeAction = { type: "SWITCH_APP_THEME"; payload: THEME };
+// interface AppTheme {
+//   appTheme: THEME;
+// }
+// type ThemeAction = { type: "SWITCH_APP_THEME"; payload: THEME };
 
-type InitialState = { appTheme: THEME };
-const initialState: InitialState = { appTheme: THEME.WORKDAY_BLUE };
+// type InitialState = { appTheme: THEME };
+// const initialState: InitialState = { appTheme: THEME.WORKDAY_BLUE };
 
-type ThemeContextType = [AppTheme, Dispatch<ThemeAction>];
-export const ThemeContext = createContext<ThemeContextType>([initialState, () => false]);
+// type ThemeContextType = [AppTheme, Dispatch<ThemeAction>];
+// export const ThemeContext = createContext<ThemeContextType>([initialState, () => false]);
 
-function reducer(state: AppTheme, action: ThemeAction) {
-  switch (action.type) {
-    case "SWITCH_APP_THEME":
-      return { ...state, appTheme: action.payload };
-    default:
-      return state;
-  }
-}
+// function reducer(state: AppTheme, action: ThemeAction) {
+//   switch (action.type) {
+//     case "SWITCH_APP_THEME":
+//       return { ...state, appTheme: action.payload };
+//     default:
+//       return state;
+//   }
+// }
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const contextValue = useReducer(reducer, initialState);
-  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
-};
+// export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+//   const contextValue = useReducer(reducer, initialState);
+//   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
+// };
 
-export const useTheme = () => useContext(ThemeContext);
+// export const useTheme = () => useContext(ThemeContext);

@@ -1,5 +1,89 @@
 import React, { createContext, useReducer, ReactNode, useContext } from "react";
-import { AppState, Filter } from "~/types";
+import { AppState, Filter, Project, Task } from "~/types";
+
+export enum DispatchTypes {
+  MARK_ALL_TASKS_AS_RESOLVED = "MARK_ALL_TASKS_AS_RESOLVED",
+  CREATE_TASK = "CREATE_TASK",
+  EDIT_TASK = "EDIT_TASK",
+  MARK_TASK_EDITABLE = "MARK_TASK_EDITABLE",
+  UNMARK_TASK_EDITABLE = "UNMARK_TASK_EDITABLE",
+  TOGGLE_RESOLVE_TASK = "TOGGLE_RESOLVE_TASK",
+  DELETE_TASK = "DELETE_TASK",
+  CREATE_PROJECT = "CREATE_PROJECT",
+  SET_PROJECTS = "SET_PROJECTS",
+  SET_PROJECTS_PAGINATED = "SET_PROJECTS_PAGINATED",
+  SET_CURRENT_PROJECT = "SET_CURRENT_PROJECT",
+  UPDATE_PROJECT = "UPDATE_PROJECT",
+  CLEAR_ALL_COMPLETED_TASKS = "CLEAR_ALL_COMPLETED_TASKS",
+  SET_FILTER = "SET_FILTER",
+}
+
+interface CREATE_TASK_PAYLOAD {
+  id: string;
+  newTask: Task;
+}
+
+interface CreateTaskAction {
+  type: DispatchTypes.CREATE_TASK;
+  payload: CREATE_TASK_PAYLOAD;
+}
+
+type NewTasksPayload =
+  | DispatchTypes.EDIT_TASK
+  | DispatchTypes.CLEAR_ALL_COMPLETED_TASKS
+  | DispatchTypes.DELETE_TASK
+  | DispatchTypes.UNMARK_TASK_EDITABLE
+  | DispatchTypes.MARK_TASK_EDITABLE
+  | DispatchTypes.TOGGLE_RESOLVE_TASK
+  | DispatchTypes.MARK_ALL_TASKS_AS_RESOLVED;
+
+interface NEW_TASKS_PAYLOAD {
+  id: string;
+  newTasks: Task[];
+}
+
+interface NewTasksAction {
+  type: NewTasksPayload;
+  payload: NEW_TASKS_PAYLOAD;
+}
+
+interface SET_FILTER_PAYLOAD {
+  newFilter: Filter;
+}
+
+interface SetFilterAction {
+  type: DispatchTypes.SET_FILTER;
+  payload: SET_FILTER_PAYLOAD;
+}
+
+type ProjectsPayload =
+  | DispatchTypes.CREATE_PROJECT
+  | DispatchTypes.SET_PROJECTS
+  | DispatchTypes.UPDATE_PROJECT;
+
+interface PROJECTS_PAYLOAD {
+  newProjects: Project[];
+}
+
+interface ProjectsAction {
+  type: ProjectsPayload;
+  payload: PROJECTS_PAYLOAD;
+}
+interface SET_PROJECTS_PAGINATED_payload {
+  newProjects: Project[];
+  currentPage: number;
+  totalPages: number;
+}
+
+interface PaginatedProjectsAction {
+  type: DispatchTypes.SET_PROJECTS_PAGINATED;
+  payload: SET_PROJECTS_PAGINATED_payload;
+}
+
+interface SetCurrentProjectAction {
+  type: DispatchTypes.SET_CURRENT_PROJECT;
+  payload: { currentProjectId: AppState["currentProjectId"] };
+}
 
 const initialState: AppState = {
   currentProjectId: "",
@@ -9,29 +93,22 @@ const initialState: AppState = {
   tasksFilter: Filter.ALL,
 };
 
-const AppStateContext = createContext<[AppState, React.Dispatch<any>]>([
+type DispatchAction =
+  | CreateTaskAction
+  | NewTasksAction
+  | SetFilterAction
+  | ProjectsAction
+  | PaginatedProjectsAction
+  | SetCurrentProjectAction;
+
+const AppStateContext = createContext<[AppState, React.Dispatch<DispatchAction>]>([
   initialState,
   () => initialState,
 ]);
 
-const MARK_ALL_TASKS_AS_RESOLVED = "MARK_ALL_TASKS_AS_RESOLVED";
-const CREATE_TASK = "CREATE_TASK";
-const EDIT_TASK = "EDIT_TASK";
-const MARK_TASK_EDITABLE = "MARK_TASK_EDITABLE";
-const UNMARK_TASK_EDITABLE = "UNMARK_TASK_EDITABLE";
-const TOGGLE_RESOLVE_TASK = "TOGGLE_RESOLVE_TASK";
-const DELETE_TASK = "DELETE_TASK";
-const CREATE_PROJECT = "CREATE_PROJECT";
-const SET_PROJECTS = "SET_PROJECTS";
-const SET_PROJECTS_PAGINATED = "SET_PROJECTS_PAGINATED";
-const SET_CURRENT_PROJECT = "SET_CURRENT_PROJECT";
-const UPDATE_PROJECT = "UPDATE_PROJECT";
-const CLEAR_ALL_COMPLETED_TASKS = "CLEAR_ALL_COMPLETED_TASKS";
-const SET_FILTER = "SET_FILTER";
-
-const appStateReducer = (state: AppState, action: any): AppState => {
+const appStateReducer = (state: AppState, action: DispatchAction): AppState => {
   switch (action.type) {
-    case CREATE_TASK:
+    case DispatchTypes.CREATE_TASK:
       console.log("creating task");
       return {
         ...state,
@@ -42,7 +119,7 @@ const appStateReducer = (state: AppState, action: any): AppState => {
           return project;
         }),
       };
-    case EDIT_TASK:
+    case DispatchTypes.EDIT_TASK:
       console.log("editing task");
       return {
         ...state,
@@ -53,13 +130,13 @@ const appStateReducer = (state: AppState, action: any): AppState => {
           return project;
         }),
       };
-    case SET_FILTER:
+    case DispatchTypes.SET_FILTER:
       console.log("filtering tasks");
       return {
         ...state,
         tasksFilter: action.payload.newFilter,
       };
-    case CLEAR_ALL_COMPLETED_TASKS:
+    case DispatchTypes.CLEAR_ALL_COMPLETED_TASKS:
       console.log("clearing all completed tasks");
       return {
         ...state,
@@ -70,7 +147,7 @@ const appStateReducer = (state: AppState, action: any): AppState => {
           return project;
         }),
       };
-    case DELETE_TASK:
+    case DispatchTypes.DELETE_TASK:
       console.log("deleting task");
       return {
         ...state,
@@ -81,7 +158,7 @@ const appStateReducer = (state: AppState, action: any): AppState => {
           return project;
         }),
       };
-    case UNMARK_TASK_EDITABLE:
+    case DispatchTypes.UNMARK_TASK_EDITABLE:
       console.log("unmarking");
       return {
         ...state,
@@ -92,7 +169,7 @@ const appStateReducer = (state: AppState, action: any): AppState => {
           return project;
         }),
       };
-    case MARK_TASK_EDITABLE:
+    case DispatchTypes.MARK_TASK_EDITABLE:
       console.log("marking");
       return {
         ...state,
@@ -103,7 +180,7 @@ const appStateReducer = (state: AppState, action: any): AppState => {
           return project;
         }),
       };
-    case TOGGLE_RESOLVE_TASK:
+    case DispatchTypes.TOGGLE_RESOLVE_TASK:
       console.log("toggling");
       return {
         ...state,
@@ -114,7 +191,7 @@ const appStateReducer = (state: AppState, action: any): AppState => {
           return project;
         }),
       };
-    case MARK_ALL_TASKS_AS_RESOLVED:
+    case DispatchTypes.MARK_ALL_TASKS_AS_RESOLVED:
       console.log("marking all as resolved");
       return {
         ...state,
@@ -125,39 +202,39 @@ const appStateReducer = (state: AppState, action: any): AppState => {
           return project;
         }),
       };
-    case CREATE_PROJECT:
+    case DispatchTypes.CREATE_PROJECT:
       console.log("creating project");
       return {
         ...state,
-        currentProjectId: action.payload[action.payload.length - 1]._id,
-        projects: action.payload,
+        currentProjectId: action.payload.newProjects[action.payload.newProjects.length - 1]._id,
+        projects: action.payload.newProjects,
       };
-    case SET_PROJECTS:
+    case DispatchTypes.SET_PROJECTS:
       console.log("setting projects");
       return {
         ...state,
-        projects: action.payload,
+        projects: action.payload.newProjects,
       };
-    case SET_PROJECTS_PAGINATED:
+    case DispatchTypes.SET_PROJECTS_PAGINATED:
       console.log("setting paginated projects");
       return {
         ...state,
-        currentProjectId: action.payload?.projects[0]?._id,
-        projects: action.payload.projects,
+        currentProjectId: action.payload?.newProjects[0]?._id,
+        projects: action.payload.newProjects,
         currentPage: action.payload.currentPage,
         totalPages: action.payload.totalPages,
       };
-    case SET_CURRENT_PROJECT:
+    case DispatchTypes.SET_CURRENT_PROJECT:
       console.log("setting current project");
       return {
         ...state,
-        currentProjectId: action.payload,
+        currentProjectId: action.payload.currentProjectId,
       };
-    case UPDATE_PROJECT:
+    case DispatchTypes.UPDATE_PROJECT:
       console.log("updating project");
       return {
         ...state,
-        projects: action.payload,
+        projects: action.payload.newProjects,
       };
     default:
       return state;
@@ -169,4 +246,5 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   return <AppStateContext.Provider value={[state, dispatch]}>{children}</AppStateContext.Provider>;
 };
 
+// "@ts-expect-warning no chance to export this from anywhere else"
 export const useAppState = () => useContext(AppStateContext);

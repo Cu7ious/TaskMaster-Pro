@@ -5,6 +5,7 @@ import { getAllUniqueTags } from "~/API";
 import { getProjectsByTag } from "~/API/projects";
 
 import { Modal } from "~/components/Modals/Modal";
+import { Project } from "~/types";
 
 interface TagsExplorerProps {
   showTagsExplorer: boolean;
@@ -17,17 +18,17 @@ interface TagsExplorerProps {
 }
 
 interface ProjectsLoaderProps {
-  projects: any[];
+  projects: Project[];
 }
 
 const ProjectsLoader: React.FC<ProjectsLoaderProps> = ({ projects }) => {
   if (projects.length === 0) return;
-  console.log("projects:", projects);
+  // console.log("projects:", projects);
   return (
     <footer css={searchFooter}>
       <ul css={searchFooterTasks}>
         <h4>Projects:</h4>
-        {projects.map((project: any) => {
+        {projects.map((project: Project) => {
           return (
             <li key={project._id}>
               <a href={`/project/${project._id}`}>{project.name}</a>
@@ -88,7 +89,7 @@ export const TagsExplorer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [tags, setTags] = useState<string[]>([]);
-  const [projects, setProjects] = useState<string[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   const handleOpenUI = () => {
     setShowTagsExplorer(true);

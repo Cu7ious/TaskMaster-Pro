@@ -8,7 +8,7 @@ interface ModalProps {
   projectName: string | undefined;
   projectTags: string[];
   onClose: () => void;
-  onSubmit: (...args: any[]) => void;
+  onSubmit: (name: string | undefined, tags: string) => void;
 }
 
 const modalRoot = document.getElementById("modal-root");

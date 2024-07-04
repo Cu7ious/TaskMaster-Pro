@@ -12,10 +12,11 @@ export default function AppControls() {
   const tasks = getProjectTasks(appState.currentProjectId, appState.projects);
 
   function clearAllCompleted() {
-    const ids = tasks.map((itm: Task) => {
+    const ids = tasks?.map((itm: Task) => {
       if (itm.resolved) return itm._id;
     });
-    ids.length > 0 &&
+    ids &&
+      ids?.length > 0 &&
       deleteAllCompletedItems(appState.currentProjectId, ids).then(res => {
         if ((res as any)?.status === 200) {
           const items = tasks.filter((item: Task) => item.resolved !== true);
@@ -27,7 +28,7 @@ export default function AppControls() {
       });
   }
 
-  function renderRemained(items: any): React.ReactNode {
+  function renderRemained(items: Task[]): React.ReactNode {
     const remainedItems = filterItems(items, Filter.REMAINED);
     return (
       <span css={remained}>
@@ -36,6 +37,7 @@ export default function AppControls() {
     );
   }
 
+  if (!tasks) return;
   return (
     tasks.length > 0 && (
       <div css={controlsCSS}>

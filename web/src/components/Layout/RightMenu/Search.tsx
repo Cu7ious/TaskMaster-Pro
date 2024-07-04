@@ -4,7 +4,7 @@ import { css } from "@emotion/react";
 import { search } from "~/API";
 import { Modal } from "~/components/Modals/Modal";
 import { isSafari } from "~/utils";
-import { Project } from "~/context/AppStateContext";
+import { Project } from "~/types";
 
 interface SearchResults {
   byProjectName: Project[];
@@ -31,7 +31,6 @@ const highlightSearchQuery = (searchQuery: string, content: string) => {
 
 export const Search: React.FC = () => {
   const [showSearchUI, setShowSearchUI] = useState(false);
-  // @ts-ignore
   const [searchQuery, setSearchQuery] = useState("");
   const [showValidationMessage, setValidationMessage] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
