@@ -25,6 +25,7 @@ import { Tasks } from "~/components/Tasks";
 import TasksControls from "~/components/Tasks/TasksControls";
 import TaskCreator from "~/components/Tasks/TasksCreator";
 
+const PROJECTS_PER_PAGE = 5;
 const REMOVE_SPACES = /\s+/g;
 const REMOVE_SPECIAL_CHARS = /[^\w\s]/g;
 
@@ -50,6 +51,7 @@ export const Projects: React.FC = () => {
   // Deletion Modal
   const [confirmDeletionModal, setConfirmDeletionModal] = useState(false);
   const [toDelete, setToDelete] = useState("");
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -113,6 +115,9 @@ export const Projects: React.FC = () => {
       if (projectNameRef.current) projectNameRef.current.value = "";
       dispatch({ type: DispatchTypes.CREATE_PROJECT, payload: { newProjects } });
       setCreationShowModal(false);
+      if (appState.projects.length === PROJECTS_PER_PAGE) {
+        setCurrentPage(appState.totalPages);
+      }
     });
   };
 
